@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String      @id @default(uuid())
+  email         String      @unique
+  name          String?
+  image         String?
+  desc          String?
+  rooms         Room[]
+}
+
+model Room {
+  id                  Int         @id @default(autoincrement())
+  title               String
+  images              String[]
+  address             String
+  lat                 String
+  lng                 String
+  category            String
+  desc                String
+  price               Int
+  bedroomDesc         String?
+  freeCancel          Boolean     @default(false)
+  selfCheckIn         Boolean    @default(false)
+  officeSpace         Boolean    @default(false)
+  hasMountainView     Boolean    @default(false)
+  hasShampoo          Boolean    @default(false)
+  hasFreeLaundry      Boolean    @default(false)
+  hasAirConditioner   Boolean    @default(false)
+  hasWifi             Boolean    @default(false)
+  hasBarbeque         Boolean    @default(false)
+  hasFreeParking      Boolean    @default(false)
+  userId              String?
+  user                User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
+
+model Faq {
+  id                  Int        @id @default(autoincrement())
+  title               String
+  desc                String
+}
