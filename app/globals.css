@@ -215,6 +215,10 @@
   font-weight: 500;
 }
 
+.custom_overlay {
+  @apply bg-white rounded-full px-2 py-1 text-xs font-semibold border border-gray-300 shadow hover:shadow-lg hover:font-bold;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

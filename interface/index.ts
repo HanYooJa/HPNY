@@ -28,10 +28,18 @@ export interface RoomType {
   address: string
   price: number
   category: string
+  lat: string
+  lng: string
 }
 
 export interface FaqType {
   id: number
   title: string
   desc: string
+}
+
+export interface LocationType {
+  lat?: string | null
+  lng?: string | null
+  zoom?: number
 }
