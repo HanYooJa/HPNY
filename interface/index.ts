@@ -26,10 +26,33 @@ export interface RoomType {
   images: string[]
   title: string
   address: string
+  desc?: string
+  bedroomDesc?: string
   price: number
   category: string
   lat: string
   lng: string
+  user?: UserType
+  userId?: number
+  freeCancel: boolean
+  selfCheckIn: boolean
+  officeSpace: boolean
+  hasMountainView: boolean
+  hasShampoo: boolean
+  hasFreeLaundry: boolean
+  hasAirConditioner: boolean
+  hasWifi: boolean
+  hasBarbeque: boolean
+  hasFreeParking: boolean
+}
+
+interface UserType {
+  id: number
+  email: string
+  name: string
+  image: string
+  desc?: string
+  rooms?: RoomType[]
 }
 
 export interface FaqType {
@@ -42,4 +65,8 @@ export interface LocationType {
   lat?: string | null
   lng?: string | null
   zoom?: number
+}
+
+export interface ParamsProps {
+  params: { id: string }
 }

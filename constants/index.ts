@@ -63,3 +63,23 @@ export const BLUR_DATA_URL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEA
 export const DEFAULT_LAT = '37.565337'
 export const DEFAULT_LNG = '126.9772095'
 export const ZOOM_LEVEL = 7
+
+const FEATURE_TYPE = {
+  FREE_CANCEL: 'FREE_CANCEL',
+  PAID_CANCEL: 'PAID_CANCEL',
+  SELF_CHECKIN: 'SELF_CHECKIN',
+  SELF_CHECKIN_DISALLOWED: 'SELF_CHECKIN_DISALLOWED',
+  FREE_OFFICE_SPACE: 'FREE_OFFICE_SPACE',
+  NO_OFFICE_SPACE: 'NO_OFFICE_SPACE',
+}
+
+type FEATURE_TYPE = (typeof FEATURE_TYPE)[keyof typeof FEATURE_TYPE]
+
+export const FeatureDesc: Record<FEATURE_TYPE, String> = {
+  [FEATURE_TYPE.FREE_CANCEL]: '무료 취소 가능합니다.',
+  [FEATURE_TYPE.PAID_CANCEL]: '무료 취소가 불가능합니다.',
+  [FEATURE_TYPE.SELF_CHECKIN]: '셀프 체크인이 가능합니다.',
+  [FEATURE_TYPE.SELF_CHECKIN_DISALLOWED]: '셀프 체크인이 불가능합니다.',
+  [FEATURE_TYPE.FREE_OFFICE_SPACE]: '사무 시설이 있습니다.',
+  [FEATURE_TYPE.NO_OFFICE_SPACE]: '사무 시설이 없습니다.',
+}

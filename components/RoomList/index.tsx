@@ -1,5 +1,6 @@
 import { RoomType } from "@/interface"
 import { ReactNode } from "react"
+import Link from "next/link"
 
 import Image from "next/image"
 import { BLUR_DATA_URL } from "@/constants"
@@ -7,6 +8,7 @@ import { BLUR_DATA_URL } from "@/constants"
 export function RoomItem({ room }: { room: RoomType }) {
   return (
     <div key={room.id}>
+      <Link href={`/rooms/${room.id}`}>
         <Image 
         src={room?.images?.[0]}
         alt={room.title}
@@ -20,6 +22,7 @@ export function RoomItem({ room }: { room: RoomType }) {
         <div className="mt-1 text-gray-400 text-sm">{room.address}</div>
         <div className="mt-1 text-sm">{room?.price?.toLocaleString()}원 <span className="text-gray-500"> /박</span>
         </div>
+        </Link>
       </div>
   )
 }

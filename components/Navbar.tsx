@@ -7,6 +7,7 @@ import { RxDividerVertical } from "react-icons/rx";
 import { AiOutlineSearch } from "react-icons/ai";
 import { AiOutlineMenu } from "react-icons/ai";
 import { AiOutlineUser } from "react-icons/ai";
+import { GiNightSleep } from 'react-icons/gi'
 
 
 
@@ -44,8 +45,8 @@ export default function Navbar(){
     },
   )}
   >
-    <div className="grow basis-0 hidden font-semibold text-lg sm:text-xl text-rose-500 cursor-pointer sm:flex sm:gap-2">
-      <MdModeOfTravel className="text-4xl my-auto"/>
+    <div className="grow basis-0 hidden font-semibold text-lg sm:text-xl text-lime-500 cursor-pointer sm:flex sm:gap-2">
+      <GiNightSleep className="text-4xl my-auto"/>
       <Link href="/" className="my-auto block">Comma</Link>
     </div>
     {showFilter === false ? (
@@ -62,7 +63,7 @@ export default function Navbar(){
       </div>
       <button type="button"
       onClick={() => setShowFilter(true)}
-      className="bg-rose-500 text-white rounded-full w-8 h-8 my-auto">
+      className="bg-lime-500 text-white rounded-full w-8 h-8 my-auto">
         <AiOutlineSearch className="text-lg m-auto font-semibold"/>
       </button>
     </div>
@@ -114,7 +115,7 @@ export default function Navbar(){
             </button>
             <SearchFilter/>
           </div>
-          <button type="button" className="bg-rose-600 text-white rounded-full h-10 mx-4 sm:w-24 mt-4 sm:mt-2 my-auto flex justify-center gap-1 px-3 py-2 hover:shadow hover:bg-rose-500" onClick={() => {
+          <button type="button" className="bg-lime-600 text-white rounded-full h-10 mx-4 sm:w-24 mt-4 sm:mt-2 my-auto flex justify-center gap-1 px-3 py-2 hover:shadow hover:bg-lime-500" onClick={() => {
             setShowFilter(false)
             setDetailFilter(null)
           }}>

@@ -5,6 +5,7 @@ import { selectedRoomState } from "@/atom";
 import { BLUR_DATA_URL } from "@/constants";
 import Image from "next/image";
 import { AiOutlineCloseCircle } from "react-icons/ai";
+import Link from "next/link";
 
 export default function SelectedRoom() {
   const [selectedRoom, setSelectedRoom] = useRecoilState(selectedRoomState)
@@ -19,6 +20,7 @@ export default function SelectedRoom() {
         >
           <AiOutlineCloseCircle />
         </button>
+        <Link href={`/rooms/$[selectedRoom.id]`}>
         <div className="rounded-lg-t h-[200px] overflow-hidden">
         <Image
           src={selectedRoom?.images?.[0]}
@@ -35,6 +37,7 @@ export default function SelectedRoom() {
           <div className="mt-1 text-gray-400">{selectedRoom.address}</div>
           <div className="mt-1">{selectedRoom.price?.toLocaleString()}원 <span className="text-gray-400"> /박</span></div>
         </div>
+        </Link>
       </div>
       }
   </div>

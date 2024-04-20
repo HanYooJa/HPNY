@@ -32,9 +32,9 @@ const LocationFilter = () => {
         <button 
         key={value} 
         type="button"
-        className={cn("border rounded-lg px-5 py-2.5 hover:bg-gray-200 focus:bg-rose-500",
+        className={cn("border rounded-lg px-5 py-2.5 hover:bg-gray-200 focus:bg-lime-500",
           {
-            'bg-rose-600 text-white': filterValue.location === value,
+            'bg-lime-600 text-white': filterValue.location === value,
           },
         )}
         onClick={() => {
@@ -67,6 +67,8 @@ const CheckInFilter = () => {
   return (
     <FilterLayout title="체크인 날짜 설정하기" isShow={detailFilter === 'checkIn'}>
       <Calendar
+      next2Label={null}
+      prev2Label={null}
       className="mt-8 mx-auto"
       onChange={onChange} 
       minDate={new Date()} 
@@ -89,7 +91,9 @@ const CheckOutFilter = () => {
   }
   return (
     <FilterLayout title="체크아웃 날짜 설정하기" isShow={detailFilter === 'checkOut'}>
-      <Calendar 
+      <Calendar
+      next2Label={null}
+      prev2Label={null} 
       className="mt-8 mx-auto" 
       onChange={onChange} 
       minDate={filterValue.checkIn ? new Date(filterValue.checkIn) : new Date()}
