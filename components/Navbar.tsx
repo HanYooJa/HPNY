@@ -9,27 +9,30 @@ import { AiOutlineMenu } from "react-icons/ai";
 import { AiOutlineUser } from "react-icons/ai";
 import { GiNightSleep } from 'react-icons/gi'
 
-
-
 import cn from "classnames";
 
-import { DetailFilterType, FilterProps } from "@/interface";
 import Link from "next/link";
 import { SearchFilter } from "./Filter";
 import { detailFilterState, filterState } from "@/atom";
 import { useRecoilState, useRecoilValue } from "recoil";
+import { signOut, useSession } from "next-auth/react";
 
-const menus = [
-  { id: 1, title: '로그인', url: '/users/login'},
+const LOGOUT_USER_MENU = [
+  { id: 1, title: '로그인', url: '/users/signin'},
   { id: 2, title: '회원가입', url: '/users/signup'},
   { id: 3, title: 'FAQ', url: '/faqs'},
 ]
 
-
+const LOGIN_USER_MENU = [
+  { id: 1, title: '마이페이지', url: '/users/mypage'},
+  { id: 2, title: 'FAQ', url: '/faqs'},
+  { id: 3, title: '로그아웃', url: '#', signout: true},
+]
 
 export default function Navbar(){
   const [showMenu, setShowMenu] = useState<boolean>(false)
   const [showFilter, setShowFilter] = useState<boolean>(false)
+  const { status, data: session } = useSession()
   const [detailFilter, setDetailFilter] = useRecoilState(detailFilterState)
   const filterValue = useRecoilValue(filterState)
 
@@ -132,16 +135,36 @@ export default function Navbar(){
         </button>
         <button type="button" onClick={() => setShowMenu((val) => !val)} className="flex align-middle gap-3 rounded-full border border-gray-20 shadow-sm px-4 py-3 my-auto hover:shadow-lg">
           <AiOutlineMenu />
-          <AiOutlineUser />
+          {status === 'authenticated' && session?.user?.image ? (
+            <img src={session?.user?.image} alt="profile img" className="rounded-full w-4 h-4 my-auto"/>
+          ) : (
+            <AiOutlineUser />
+          )}
         </button>
         {showMenu && (
           <div className="border border-gray-200 shadow-lg py-2 flex flex-col absolute top-12 bg-white w-60 rounded-lg">
-            {menus?.map((menu) => (
+            {status === 'unauthenticated' ? LOGOUT_USER_MENU?.map((menu) => (
               <button 
               type="button" 
               key={menu.id} 
               className="h-10 hover:bg-gray-50 pl-3 text-sm text-gray-700 text-left"
-              onClick={() => router.push(menu.url)}
+              onClick={() => {
+                router.push(menu.url)
+                setShowMenu(false)
+              }}
+              >
+                {menu.title}
+              </button>
+            )) : LOGIN_USER_MENU?.map((menu) => (
+              <button 
+              type="button" 
+              key={menu.id} 
+              className="h-10 hover:bg-gray-50 pl-3 text-sm text-gray-700 text-left"
+              onClick={() => {
+                menu.signout ? signOut({ callbackUrl: '/' }) : null
+                router.push(menu.url)
+                setShowMenu(false)
+              }}
               >
                 {menu.title}
               </button>
