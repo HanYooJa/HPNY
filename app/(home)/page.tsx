@@ -12,7 +12,6 @@ import { RoomType } from "@/interface"
 import { Loader, LoaderGrid } from "@/components/Loader"
 import useIntersectionObserver from "@/hooks/useIntersectionObserver"
 
-import { BsMap } from "react-icons/bs";
 import { MapButton } from "@/components/Map"
 
 export default function Home() {

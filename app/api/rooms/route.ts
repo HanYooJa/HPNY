@@ -1,17 +1,27 @@
 import prisma from "@/db"
 import { NextResponse } from 'next/server'
 
+import { getServerSession } from 'next-auth'
+import { authOptions } from "../auth/[...nextauth]/route"
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const page = searchParams.get('page') as string
   const limit = searchParams.get('limit') as string
   const id = searchParams.get('id') as string
 
+  const session = await getServerSession(authOptions)
+
   if (id) { 
     //상세 페이지 로직
     const room = await prisma.room.findFirst({
       where: {
         id: parseInt(id),
+      },
+      include: {
+        likes: {
+          where: session ? { userId: session?.user?.id } : {},
+        },
       },
     })
     return NextResponse.json(room, {
