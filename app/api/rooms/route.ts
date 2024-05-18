@@ -22,6 +22,7 @@ export async function GET(req: Request) {
         likes: {
           where: session ? { userId: session?.user?.id } : {},
         },
+        comments: true,
       },
     })
     return NextResponse.json(room, {
