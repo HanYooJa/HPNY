@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation'
 import { useParams } from 'next/navigation'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 
 export default function SubmitButton() {
   const { status } = useSession()
@@ -40,14 +41,9 @@ export default function SubmitButton() {
 
   return (
     <div>
-      <button
-        type="button"
-        disabled={status === 'unauthenticated'}
-        onClick={handleSubmit}
-        className="bg-lime-600 hover:bg-lime-500 px-6 py-3 text-white rounded-md w-full disabled:bg-gray-300"
-      >
-        확인 및 결제
-      </button>
+      <PayPalScriptProvider options={{ clientId:"AQQMOvSjXVQpbgMabqrY5aXp3roWjXgZDCb6JUv0i3olvzWdXAmGShcsug4fJXTVIO-BxRkwsOxV6TAc" }}>
+        <PayPalButtons />
+      </PayPalScriptProvider>
     </div>
   )
 }
