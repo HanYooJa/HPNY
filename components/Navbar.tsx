@@ -130,9 +130,18 @@ export default function Navbar(){
     )}
 
     <div className="grow basis-0 hidden md:flex gap-4 align-middle justify-end relative">
-      <button type="button" className="font-semibold text-sm my-auto px-4 py-3 rounded-full hover:bg-gray-50">
+      {status === 'authenticated' ? (
+      <Link href={`/rooms/register/category`}
+      className="font-semibold text-sm my-auto px-4 py-3 rounded-full hover:bg-gray-50">
         당신의 공간을 등록해주세요
-        </button>
+        </Link>
+        ) : (
+          <Link href={`/users/signin`}
+      className="font-semibold text-sm my-auto px-4 py-3 rounded-full hover:bg-gray-50">
+        로그인 후 사용해주세요
+        </Link>
+        )}
+      
         <button type="button" onClick={() => setShowMenu((val) => !val)} className="flex align-middle gap-3 rounded-full border border-gray-20 shadow-sm px-4 py-3 my-auto hover:shadow-lg">
           <AiOutlineMenu />
           {status === 'authenticated' && session?.user?.image ? (

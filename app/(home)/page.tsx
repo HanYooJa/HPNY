@@ -13,18 +13,27 @@ import { Loader, LoaderGrid } from "@/components/Loader"
 import useIntersectionObserver from "@/hooks/useIntersectionObserver"
 
 import { MapButton } from "@/components/Map"
+import { useRecoilValue } from "recoil"
+import { filterState } from "@/atom"
 
 export default function Home() {
   const router = useRouter()
   const ref = useRef<HTMLDivElement | null>(null)
+  const filterValue = useRecoilValue(filterState)
   const pageRef = useIntersectionObserver(ref, {})
   const isPageEnd = !!pageRef?.isIntersecting
+
+  const filterParams = {
+    location: filterValue.location,
+    category: filterValue.category,
+  }
 
   const fetchRooms = async ({ pageParam = 1 }) => {
     const { data } = await axios('/api/rooms?page=' + pageParam, {
       params: {
         limit: 12,
         page: pageParam,
+        ...filterParams,
       },
     })
 
@@ -39,7 +48,7 @@ export default function Home() {
     hasNextPage,
     isError,
     isLoading,
-  } = useInfiniteQuery('rooms', fetchRooms, {
+  } = useInfiniteQuery(['rooms', filterParams], fetchRooms, {
     getNextPageParam: (lastPage, pages) => lastPage?.data?.length > 0 ? lastPage.page + 1 : undefined,
   })
 
