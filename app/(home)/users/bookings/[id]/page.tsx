@@ -3,7 +3,6 @@ import { BLUR_DATA_URL } from '@/constants'
 import { BookingType } from '@/interface'
 import dayjs from 'dayjs'
 import Image from 'next/image'
-
 export default async function BookingPage({
   params,
 }: {
@@ -12,7 +11,6 @@ export default async function BookingPage({
   const id = params.id
   const booking: BookingType = await getData(id)
   const canRefund = dayjs(booking?.checkIn).diff(dayjs(), 'days') > 10
-
   return (
     <div className="max-w-5xl mx-auto px-4 pt-10 pb-20">
       <h1 className="text-xl md:text-3xl font-semibold">예약 상세 내역</h1>
@@ -65,23 +63,27 @@ export default async function BookingPage({
             </div>
           </div>
         </section>
-        <RefundButton booking={booking} canRefund={canRefund}/>
+        
+        <RefundButton booking={booking} canRefund={canRefund} />
       </div>
     </div>
   )
 }
-
 async function getData(id: string) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/bookings?id=${id}`,
-    {
-      cache: 'no-store',
-    },
-  )
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/bookings?id=${id}`,
+      {
+        cache: 'no-store',
+      },
+    )
 
   if (!res.ok) {
     throw new Error('Failed to fetch data')
   }
 
   return res.json()
+  } catch (e) {
+    console.error(e)
+  }
 }

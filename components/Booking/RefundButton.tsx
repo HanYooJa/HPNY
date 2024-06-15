@@ -5,6 +5,7 @@ import { BookingType } from '@/interface'
 import Modal from '../Modal'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 
 interface RefundProps {
   booking: BookingType
@@ -40,6 +41,11 @@ export default function RefundButton({ booking, canRefund }: RefundProps) {
 
   return (
     <>
+    <PayPalScriptProvider options={{ clientId:"AQQMOvSjXVQpbgMabqrY5aXp3roWjXgZDCb6JUv0i3olvzWdXAmGShcsug4fJXTVIO-BxRkwsOxV6TAc" }}>
+      <div className='justify-center'>
+        <PayPalButtons/>
+        </div>
+      </PayPalScriptProvider>
       <section className="flex flex-col gap-4">
         {booking?.status === 'CANCEL' || isRefund ? (
           <button

@@ -10,7 +10,7 @@ import { BiReset } from 'react-icons/bi'
 export default function CategoryList() {
   const [filterValue, setFilterValue] = useRecoilState(filterState)
   return (
-    <div className='flex gap-6 fixed top-20 inset-x-0 mx-auto overflow-x-scroll w-full flex-nowrap px-2 sm:pl-24 pr-16 bg-white z-10 mb-6'>
+    <div className='flex gap-6 fixed top-20 inset-x-0 mx-auto overflow-x-scroll w-full flex-nowrap px-2 sm:pl-24 pr-16 bg-white z-10 mb-6 justify-center'>
       <button
         className="flex-none justify-center gap-3 py-4 w-16 text-center"
         onClick={() => {

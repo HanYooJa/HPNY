@@ -18,17 +18,22 @@ export default async function RoomPage({ params }: ParamsProps ) {
 }
 
 async function getData(id:string) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/rooms?id=${id}`,
-    {
-      next: {
-        revalidate: 60 * 60,
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/rooms?id=${id}`,
+      {
+        next: {
+          revalidate: 60 * 60,
+        },
       },
-    },
-  )
+    )
 
-  if (!res.ok) {
-    throw new Error('Failed to fetch data')
+    if (!res.ok) {
+      throw new Error('Failed to fetch data')
+    }
+
+    return res.json()
+  } catch (e) {
+    console.error(e)
   }
-
-  return res.json()
 }
