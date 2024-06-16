@@ -13,9 +13,15 @@ import { AiFillCamera } from 'react-icons/ai'
 import toast from 'react-hot-toast'
 import axios from 'axios'
 import { useState } from 'react'
-import { deleteObject, getDownloadURL, ref, uploadString } from 'firebase/storage'
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadString,
+} from 'firebase/storage'
 import { storage } from '@/utils/firebaseApp'
 import { useSession } from 'next-auth/react'
+import Image from 'next/image'
 
 interface RoomImageProps {
   images?: string[]
@@ -28,6 +34,7 @@ export default function RoomRegisterImage() {
   const [images, setImages] = useState<string[] | null>(null)
   const [disableSubmit, setDisableSubmit] = useState<boolean>(false)
   const resetRoomForm = useResetRecoilState(roomFormState)
+  let imageKeys: string[] = []
 
   const {
     register,
@@ -60,10 +67,9 @@ export default function RoomRegisterImage() {
   }
 
   async function uploadImages(images: string[] | null) {
-    const uploadedImageUrls: { url: string, key: string }[] = []
-    const imageKeys: string[] = []
+    const uploadedImageUrls = []
 
-    if (!images) return []
+    if (!images) return
 
     for (const imageFile of images) {
       const imageKey = uuidv4()
@@ -72,7 +78,7 @@ export default function RoomRegisterImage() {
       try {
         const data = await uploadString(imageRef, imageFile, 'data_url')
         const imageUrl = await getDownloadURL(data.ref)
-        uploadedImageUrls.push({ url: imageUrl, key: imageKey })
+        uploadedImageUrls.push(imageUrl)
       } catch (error) {
         console.error('Error uploading images: ', error)
       }
@@ -81,8 +87,8 @@ export default function RoomRegisterImage() {
     return uploadedImageUrls
   }
 
-  const deleteImages = (imageKeys: string[]) => {
-    imageKeys.forEach((key) => {
+  const deleteImages = () => {
+    imageKeys?.forEach((key) => {
       const imageRef = ref(storage, `${session?.user.id}/${key}`)
       deleteObject(imageRef)
         .then(() => {
@@ -97,26 +103,27 @@ export default function RoomRegisterImage() {
   const onSubmit = async (data: RoomImageProps) => {
     try {
       setDisableSubmit(true)
-      const imageUrls = await uploadImages(images)
+      uploadImages(images)
+        .then(async (imageUrls) => {
+          const result = await axios.post('/api/rooms', {
+            ...roomForm,
+            images: imageUrls,
+            imageKeys: imageKeys,
+          })
 
-      if (imageUrls.length > 0) {
-        const result = await axios.post('/api/rooms', {
-          ...roomForm,
-          images: imageUrls.map(img => img.url),
-          imageKeys: imageUrls.map(img => img.key),
+          if (result.status === 200) {
+            toast.success('숙소를 등록했습니다.')
+            resetRoomForm()
+            router.push('/')
+          } else {
+            toast.error('데이터 생성 중 문제가 발생했습니다.')
+          }
         })
-
-        if (result.status === 200) {
-          toast.success('숙소를 등록했습니다.')
-          resetRoomForm()
-          router.push('/')
-        } else {
-          toast.error('데이터 생성중 문제가 발생했습니다.')
-          deleteImages(imageUrls.map(img => img.key))
-        }
-      } else {
-        toast.error('이미지 저장중에 문제가 발생했습니다. 다시 시도해주세요')
-      }
+        .catch((error) => {
+          console.error(error)
+          toast.error('이미지 저장 중 문제가 발생했습니다. 다시 시도해주세요')
+          deleteImages()
+        })
     } catch (e) {
       setDisableSubmit(false)
       console.log(e)
@@ -141,7 +148,7 @@ export default function RoomRegisterImage() {
           <div className="col-span-full">
             <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
               <div className="text-center">
-                <AiFillCamera className='mx-auto h-12 w-12 text-gray-300'/>
+                <AiFillCamera className="mx-auto h-12 w-12 text-gray-300" />
                 <div className="mt-4 flex text-sm leading-6 text-gray-600">
                   <label
                     htmlFor="file-upload"
@@ -151,10 +158,10 @@ export default function RoomRegisterImage() {
                     <input
                       id="file-upload"
                       type="file"
-                      {...register('images', { required: true })}
                       multiple
                       accept="image/*"
                       className="sr-only"
+                      {...register('images', { required: true })}
                       onChange={handleFileUpload}
                     />
                   </label>
@@ -173,7 +180,7 @@ export default function RoomRegisterImage() {
         <div className="mt-10 max-w-lg mx-auto flex flex-wrap gap-4">
           {images &&
             images?.map((image, index) => (
-              <img
+              <Image
                 key={index}
                 src={image}
                 alt="미리보기"
