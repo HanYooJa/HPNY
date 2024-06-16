@@ -28,7 +28,6 @@ export default function RoomRegisterImage() {
   const [images, setImages] = useState<string[] | null>(null)
   const [disableSubmit, setDisableSubmit] = useState<boolean>(false)
   const resetRoomForm = useResetRecoilState(roomFormState)
-  let imageKeys: string[] = []
 
   const {
     register,
@@ -61,21 +60,19 @@ export default function RoomRegisterImage() {
   }
 
   async function uploadImages(images: string[] | null) {
-    const uploadedImageUrls = []
+    const uploadedImageUrls: { url: string, key: string }[] = []
+    const imageKeys: string[] = []
 
-    if (!images) return
+    if (!images) return []
 
     for (const imageFile of images) {
-      // 참조 만들기
       const imageKey = uuidv4()
       const imageRef = ref(storage, `${session?.user?.id}/${imageKey}`)
       imageKeys.push(imageKey)
       try {
-        // uploadString으로 firebase에 이미지 업로드하기
         const data = await uploadString(imageRef, imageFile, 'data_url')
-        // downloadURL로 업로드 된 이미지 주소 가져오기
         const imageUrl = await getDownloadURL(data.ref)
-        uploadedImageUrls.push(imageUrl)
+        uploadedImageUrls.push({ url: imageUrl, key: imageKey })
       } catch (error) {
         console.error('Error uploading images: ', error)
       }
@@ -84,8 +81,8 @@ export default function RoomRegisterImage() {
     return uploadedImageUrls
   }
 
-  const deleteImages = () => {
-    imageKeys?.forEach((key) => {
+  const deleteImages = (imageKeys: string[]) => {
+    imageKeys.forEach((key) => {
       const imageRef = ref(storage, `${session?.user.id}/${key}`)
       deleteObject(imageRef)
         .then(() => {
@@ -98,32 +95,28 @@ export default function RoomRegisterImage() {
   }
 
   const onSubmit = async (data: RoomImageProps) => {
-    // roomForm API 생성 요청
-    // 생성 후에는 resetRoomForm으로 리코일 초기화
-    // 내가 등록한 숙소 리스트로 돌아가도록 라우팅
     try {
       setDisableSubmit(true)
-      uploadImages(images)
-        .then(async (imageUrls) => {
-          const result = await axios.post('/api/rooms', {
-            ...roomForm,
-            images: imageUrls,
-            imageKeys: imageKeys,
-          })
+      const imageUrls = await uploadImages(images)
 
-          if (result.status === 200) {
-            toast.success('숙소를 등록했습니다.')
-            resetRoomForm()
-            router.push('/')
-          } else {
-            toast.error('데이터 생성중 문제가 발생했습니다.')
-          }
+      if (imageUrls.length > 0) {
+        const result = await axios.post('/api/rooms', {
+          ...roomForm,
+          images: imageUrls.map(img => img.url),
+          imageKeys: imageUrls.map(img => img.key),
         })
-        .catch((error) => {
-          console.error(error)
-          toast.error('이미지 저장중에 문제가 발생했습니다. 다시 시도해주세요')
-          deleteImages()
-        })
+
+        if (result.status === 200) {
+          toast.success('숙소를 등록했습니다.')
+          resetRoomForm()
+          router.push('/')
+        } else {
+          toast.error('데이터 생성중 문제가 발생했습니다.')
+          deleteImages(imageUrls.map(img => img.key))
+        }
+      } else {
+        toast.error('이미지 저장중에 문제가 발생했습니다. 다시 시도해주세요')
+      }
     } catch (e) {
       setDisableSubmit(false)
       console.log(e)

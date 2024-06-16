@@ -1,8 +1,8 @@
 import { FirebaseApp, getApp, initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+import { getAnalytics, isSupported } from "firebase/analytics";
 import { getStorage } from "firebase/storage";
 
-export let app: FirebaseApp
+export let app: FirebaseApp;
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -15,10 +15,19 @@ const firebaseConfig = {
 };
 
 try {
-  app = getApp('app')
+  app = getApp('app');
 } catch (e) {
-  app = initializeApp(firebaseConfig, 'app')
+  app = initializeApp(firebaseConfig, 'app');
 }
-const analytics = getAnalytics(app);
 
-export const storage = getStorage(app)
+let analytics;
+if (typeof window !== 'undefined') {
+  // 클라이언트 측에서만 실행
+  isSupported().then((supported) => {
+    if (supported) {
+      analytics = getAnalytics(app);
+    }
+  });
+}
+
+export const storage = getStorage(app);
