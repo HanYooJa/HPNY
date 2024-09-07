@@ -68,6 +68,8 @@ model User {
   likes         Like[]
   comments      Comment[]
   bookings      Booking[]
+
+  Activity Activity[]
 }
 
 model Comment {
@@ -79,6 +81,7 @@ model Comment {
   room          Room        @relation(fields: [roomId], references: [id], onDelete: Cascade)
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([userId, roomId])
+  Activity Activity[]
 }
 
 model Like {
@@ -88,6 +91,8 @@ model Like {
   roomId          Int
   room            Room      @relation(fields: [roomId], references: [id], onDelete: Cascade)
   user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  Activity Activity[]
 }
 
 model Room {
@@ -141,6 +146,28 @@ model Booking {
   createdAt             DateTime   @default(now())
   updatedAt             DateTime   @default(now())
   status                BookingStatus
+
+  Activity Activity[]
+}
+
+model Activity {
+  id         Int      @id @default(autoincrement())
+  title      String
+  images     String[]
+  imageKeys  String[]
+  address    String
+  lat        String
+  lng        String
+  category   String
+  desc       String
+  price      Int
+  userId     String?
+  createdAt  DateTime @default(now())
+  likes      Like[]
+  comments   Comment[]
+  bookings   Booking[]
+  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
 }
 
 enum BookingStatus {

@@ -3,11 +3,14 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        hostname: 'loremflickr.com',
+        hostname: "loremflickr.com",
       },
       {
-        hostname: 'firebasestorage.googleapis.com',
-      }
+        hostname: "firebasestorage.googleapis.com",
+      },
+      {
+        hostname: "res.cloudinary.com",
+      },
     ],
   },
 }

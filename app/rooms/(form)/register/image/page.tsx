@@ -1,27 +1,18 @@
 /* eslint-disable @next/next/no-img-element */
-'use client'
+"use client"
 
-import { roomFormState } from '@/atom'
-import { useRouter } from 'next/navigation'
-import { useRecoilState, useResetRecoilState } from 'recoil'
-import { v4 as uuidv4 } from 'uuid'
-
-import { useForm } from 'react-hook-form'
-import Stepper from '@/components/Form/Stepper'
-import NextButton from '@/components/Form/NextButton'
-import { AiFillCamera } from 'react-icons/ai'
-import toast from 'react-hot-toast'
-import axios from 'axios'
-import { useState } from 'react'
-import {
-  deleteObject,
-  getDownloadURL,
-  ref,
-  uploadString,
-} from 'firebase/storage'
-import { storage } from '@/utils/firebaseApp'
-import { useSession } from 'next-auth/react'
-import Image from 'next/image'
+import { roomFormState } from "@/atom"
+import { useRouter } from "next/navigation"
+import { useRecoilState, useResetRecoilState } from "recoil"
+import { useForm } from "react-hook-form"
+import Stepper from "@/components/Form/Stepper"
+import NextButton from "@/components/Form/NextButton"
+import { AiFillCamera } from "react-icons/ai"
+import toast from "react-hot-toast"
+import axios from "axios"
+import { useState } from "react"
+import { useSession } from "next-auth/react"
+import Image from "next/image"
 
 interface RoomImageProps {
   images?: string[]
@@ -34,23 +25,24 @@ export default function RoomRegisterImage() {
   const [images, setImages] = useState<string[] | null>(null)
   const [disableSubmit, setDisableSubmit] = useState<boolean>(false)
   const resetRoomForm = useResetRecoilState(roomFormState)
-  let imageKeys: string[] = []
 
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors, isSubmitting },
   } = useForm<RoomImageProps>()
 
+  // 최대 5장 이미지 업로드 제한
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const {
-      target: { files },
-    } = e
+    const { files } = e.target
 
     if (!files) return
-    setImages([])
+    if (files.length + (images?.length || 0) > 5) {
+      toast.error("최대 5장의 사진만 업로드할 수 있습니다.")
+      return
+    }
 
+    const newImages: string[] = []
     Array.from(files).forEach((file: File) => {
       const fileReader = new FileReader()
       fileReader.readAsDataURL(file)
@@ -58,76 +50,71 @@ export default function RoomRegisterImage() {
       fileReader.onloadend = (event: ProgressEvent<FileReader>) => {
         const { result } = event.target as FileReader
         if (result) {
-          setImages((val) =>
-            val ? [...val, result?.toString()] : [result?.toString()],
-          )
+          newImages.push(result.toString())
         }
       }
     })
+
+    setImages((prevImages) =>
+      prevImages ? [...prevImages, ...newImages] : newImages,
+    )
   }
 
+  // Cloudinary 업로드 함수
   async function uploadImages(images: string[] | null) {
     const uploadedImageUrls = []
 
     if (!images) return
 
     for (const imageFile of images) {
-      const imageKey = uuidv4()
-      const imageRef = ref(storage, `${session?.user?.id}/${imageKey}`)
-      imageKeys.push(imageKey)
-      try {
-        const data = await uploadString(imageRef, imageFile, 'data_url')
-        const imageUrl = await getDownloadURL(data.ref)
-        uploadedImageUrls.push(imageUrl)
-      } catch (error) {
-        console.error('Error uploading images: ', error)
+      const formData = new FormData()
+
+      if (imageFile) {
+        formData.append("file", imageFile) // 이미지 파일 추가
+
+        if (process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET) {
+          formData.append(
+            "upload_preset",
+            process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
+          )
+        }
+
+        try {
+          const res = await axios.post(
+            `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+            formData,
+          )
+          uploadedImageUrls.push(res.data.secure_url) // 업로드한 이미지 URL 저장
+        } catch (error) {
+          console.error("Error uploading images: ", error)
+        }
       }
     }
 
     return uploadedImageUrls
   }
 
-  const deleteImages = () => {
-    imageKeys?.forEach((key) => {
-      const imageRef = ref(storage, `${session?.user.id}/${key}`)
-      deleteObject(imageRef)
-        .then(() => {
-          console.log('File Deleted: ', key)
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    })
-  }
-
-  const onSubmit = async (data: RoomImageProps) => {
+  const onSubmit = async () => {
     try {
       setDisableSubmit(true)
-      uploadImages(images)
-        .then(async (imageUrls) => {
-          const result = await axios.post('/api/rooms', {
-            ...roomForm,
-            images: imageUrls,
-            imageKeys: imageKeys,
-          })
+      const imageUrls = await uploadImages(images)
+      const result = await axios.post("/api/rooms", {
+        ...roomForm,
+        images: imageUrls,
+      })
 
-          if (result.status === 200) {
-            toast.success('숙소를 등록했습니다.')
-            resetRoomForm()
-            router.push('/')
-          } else {
-            toast.error('데이터 생성 중 문제가 발생했습니다.')
-          }
-        })
-        .catch((error) => {
-          console.error(error)
-          toast.error('이미지 저장 중 문제가 발생했습니다. 다시 시도해주세요')
-          deleteImages()
-        })
-    } catch (e) {
+      if (result.status === 200) {
+        toast.success("숙소를 등록했습니다.")
+        resetRoomForm()
+        router.push("/")
+      } else {
+        toast.error("데이터 생성 중 문제가 발생했습니다.")
+      }
+    } catch (error) {
+      console.error("Error submitting form: ", error)
+      toast.error("이미지 저장 중 문제가 발생했습니다. 다시 시도해주세요")
+    } finally {
       setDisableSubmit(false)
-      console.log(e)
-      toast.error('다시 시도해주세요')
     }
   }
 
@@ -161,7 +148,7 @@ export default function RoomRegisterImage() {
                       multiple
                       accept="image/*"
                       className="sr-only"
-                      {...register('images', { required: true })}
+                      {...register("images", { required: true })}
                       onChange={handleFileUpload}
                     />
                   </label>
@@ -173,7 +160,7 @@ export default function RoomRegisterImage() {
               </div>
             </div>
           </div>
-          {errors?.images && errors?.images?.type === 'required' && (
+          {errors?.images && errors?.images?.type === "required" && (
             <span className="text-red-600 text-sm">필수 항목입니다.</span>
           )}
         </div>
