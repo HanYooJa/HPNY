@@ -1,6 +1,6 @@
 import { ReactNode } from "react"
 
-export type DetailFilterType = 'location' | 'checkIn' | 'checkOut' | 'guest'
+export type DetailFilterType = "location" | "checkIn" | "checkOut" | "guest"
 export interface FilterProps {
   location: string
   checkIn: string
@@ -23,19 +23,23 @@ export interface FilterLayoutProps {
 
 export interface LikeType {
   id: number
-  roomId: number
+  roomId?: number
+  activityId?: number // Activity에 대한 좋아요
   userId: number
   createdAt: string
-  room: RoomType
+  room?: RoomType
+  activity?: ActivityType // Activity 관계 추가
 }
 
 export interface CommentType {
   id: number
   createdAt: string
-  roomId: number
+  roomId?: number
+  activityId?: number // Activity에 대한 댓글
   userId: string
   body: string
-  room: RoomType
+  room?: RoomType
+  activity?: ActivityType // Activity 관계 추가
   user: UserType
 }
 
@@ -44,7 +48,7 @@ export interface CommentApiType {
   data: CommentType[]
   page?: number
   totalPage?: number
-} 
+}
 
 export interface RoomType {
   id: number
@@ -77,6 +81,26 @@ export interface RoomType {
   updatedAt?: string
 }
 
+export interface ActivityType {
+  id: number
+  images: string[]
+  imageKeys?: string[]
+  title: string
+  address: string
+  desc?: string
+  price: number
+  category: string
+  lat: string
+  lng: string
+  user?: UserType
+  userId?: number
+  likes?: LikeType[]
+  comments?: CommentType[]
+  bookings?: BookingType[] // 체험 예약 기능이 있으면 BookingType과 연관
+  createdAt?: string
+  updatedAt?: string
+}
+
 interface Account {
   id: string
   provider: string
@@ -89,10 +113,11 @@ export interface UserType {
   image: string
   desc?: string
   rooms?: RoomType[]
+  activities?: ActivityType[] // 사용자가 생성한 체험들
   accounts: Account[]
   address?: string
   phone?: string
-  comments?: Comment []
+  comments?: Comment[]
   bookings?: BookingType[]
 }
 
@@ -125,17 +150,19 @@ export interface BookingParamsProps {
 
 export interface BookingType {
   id: number
-  roomId: number
+  roomId?: number
+  activityId?: number // Activity에 대한 예약
   userId: string
   checkIn: string
   checkOut: string
   guestCount: number
   totalAmount: number
   totalDays: number
-  status: 'SUCCESS' | 'CANCEL'
-  room: RoomType
+  status: "SUCCESS" | "CANCEL"
+  room?: RoomType
+  activity?: ActivityType // Activity 관계 추가
   user: UserType
-  createAt: string
+  createdAt: string
   updatedAt: string
 }
 

@@ -1,9 +1,10 @@
-'use client'
+"use client"
 
-import { useSession } from 'next-auth/react'
-import Link from 'next/link'
-import { AiOutlineComment, AiOutlineHeart, AiOutlineUser } from 'react-icons/ai'
-import { BsHouseAdd, BsHouseCheck, BsBookmark } from 'react-icons/bs'
+import { useSession } from "next-auth/react"
+import Link from "next/link"
+import { AiOutlineComment, AiOutlineHeart, AiOutlineUser } from "react-icons/ai"
+import { BsHouseAdd, BsHouseCheck, BsBookmark } from "react-icons/bs"
+import { MdOutlineSportsEsports, MdSportsEsports } from "react-icons/md"
 
 export default function UserMyPage() {
   const { data: session } = useSession()
@@ -12,10 +13,10 @@ export default function UserMyPage() {
     <div className="mt-10 max-w-5xl mx-auto px-4">
       <h1 className="text-3xl font-semibold">계정</h1>
       <div className="flex gap-2 mt-2 text-lg">
-        <div className="font-semibold">{session?.user?.name || '사용자'}</div>
+        <div className="font-semibold">{session?.user?.name || "사용자"}</div>
         <div className="font-semibold">·</div>
         <div className="text-gray-700">
-          {session?.user?.email || 'user@comma.com'}
+          {session?.user?.email || "user@comma.com"}
         </div>
       </div>
       <div className="grid md:grid-cols-3 gap-4 mt-12 mb-20">
@@ -30,7 +31,7 @@ export default function UserMyPage() {
           </div>
         </Link>
         <Link
-          href="/room/register/category"
+          href="/rooms/register/category"
           className="shadow-lg rounded-lg flex flex-col justify-between p-4 gap-12 hover:shadow-xl"
         >
           <BsHouseAdd className="text-xl md:text-3xl" />
@@ -77,6 +78,26 @@ export default function UserMyPage() {
           <div>
             <h1 className="font-semibold">나의 예약</h1>
             <h2 className="text-sm text-gray-500">나의 예약 모아보기</h2>
+          </div>
+        </Link>
+        <Link
+          href="/users/bookings"
+          className="shadow-lg rounded-lg flex flex-col justify-between p-4 gap-12 hover:shadow-xl"
+        >
+          <MdOutlineSportsEsports className="text-xl md:text-3xl" />
+          <div>
+            <h1 className="font-semibold">체험활동 등록</h1>
+            <h2 className="text-sm text-gray-500">나의 체험활동 등록하기</h2>
+          </div>
+        </Link>
+        <Link
+          href="/users/activities"
+          className="shadow-lg rounded-lg flex flex-col justify-between p-4 gap-12 hover:shadow-xl"
+        >
+          <MdSportsEsports className="text-xl md:text-3xl" />
+          <div>
+            <h1 className="font-semibold">체험활동 관리</h1>
+            <h2 className="text-sm text-gray-500">나의 체험활동 관리하기</h2>
           </div>
         </Link>
       </div>

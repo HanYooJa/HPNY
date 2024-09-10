@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation" // useRouter 사용
 import { MdModeOfTravel } from "react-icons/md"
 import { RxDividerVertical } from "react-icons/rx"
 import { AiOutlineSearch } from "react-icons/ai"
@@ -36,7 +36,7 @@ export default function Navbar() {
   const [detailFilter, setDetailFilter] = useRecoilState(detailFilterState)
   const filterValue = useRecoilValue(filterState)
 
-  const router = useRouter()
+  const router = useRouter() // useRouter 훅을 사용
 
   return (
     <nav
@@ -81,22 +81,16 @@ export default function Navbar() {
             <button
               type="button"
               className="font-semibold underline underline-offset-8"
+              onClick={() => router.push("/")}
             >
               숙소
             </button>
             <button
               type="button"
               className="text-gray-700"
-              onClick={() => window.alert("서비스 준비중입니다.")}
+              onClick={() => router.push("/activities")} // 클릭 시 activities 페이지로 이동
             >
-              체험
-            </button>
-            <button
-              type="button"
-              className="text-gray-700"
-              onClick={() => window.alert("서비스 준비중입니다.")}
-            >
-              온라인 체험
+              다양한 체험
             </button>
             <button
               type="button"
