@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation" // useRouter 사용
+import { useRouter, usePathname } from "next/navigation"
 import { MdModeOfTravel } from "react-icons/md"
 import { RxDividerVertical } from "react-icons/rx"
 import { AiOutlineSearch } from "react-icons/ai"
@@ -36,7 +36,8 @@ export default function Navbar() {
   const [detailFilter, setDetailFilter] = useRecoilState(detailFilterState)
   const filterValue = useRecoilValue(filterState)
 
-  const router = useRouter() // useRouter 훅을 사용
+  const router = useRouter()
+  const pathname = usePathname()
 
   return (
     <nav
@@ -80,17 +81,23 @@ export default function Navbar() {
           <div className="flex justify-center gap-7 h-14 text-center items-center">
             <button
               type="button"
-              className="font-semibold underline underline-offset-8"
+              className={cn("font-semibold", {
+                "underline underline-offset-8": pathname === "/",
+                "text-gray-500 hover:text-black": pathname !== "/",
+              })}
               onClick={() => router.push("/")}
             >
               숙소
             </button>
             <button
               type="button"
-              className="text-gray-700"
-              onClick={() => router.push("/activities")} // 클릭 시 activities 페이지로 이동
+              className={cn("font-semibold", {
+                "underline underline-offset-8": pathname === "/activities",
+                "text-gray-500 hover:text-black": pathname !== "/activities",
+              })}
+              onClick={() => router.push("/activities")}
             >
-              다양한 체험
+              활동
             </button>
             <button
               type="button"
@@ -181,12 +188,21 @@ export default function Navbar() {
 
       <div className="grow basis-0 hidden md:flex gap-4 align-middle justify-end relative">
         {status === "authenticated" ? (
-          <Link
-            href={`/rooms/register/category`}
-            className="font-semibold text-sm my-auto px-4 py-3 rounded-full hover:bg-gray-50"
-          >
-            당신의 공간을 등록해주세요
-          </Link>
+          pathname === "/activities" ? (
+            <Link
+              href={`/activities/register/category`}
+              className="font-semibold text-sm my-auto px-4 py-3 rounded-full hover:bg-gray-50"
+            >
+              당신의 활동을 등록해주세요
+            </Link>
+          ) : (
+            <Link
+              href={`/rooms/register/category`}
+              className="font-semibold text-sm my-auto px-4 py-3 rounded-full hover:bg-gray-50"
+            >
+              당신의 공간을 등록해주세요
+            </Link>
+          )
         ) : (
           <Link
             href={`/users/signin`}

@@ -1,9 +1,12 @@
 "use client"
 import React, { useEffect, useRef } from "react"
-import { GridLayout, ActivityItem } from "@/components/ActivitiesList" // RoomItem을 ActivityItem으로 교체
+
+import CategoryList from "@/components/CategoryList"
+import { GridLayout, ActivityItem } from "@/components/ActivitiesList"
 import { useInfiniteQuery } from "react-query"
-import axios from "axios"
 import { useRouter } from "next/navigation"
+
+import axios from "axios"
 
 import { ActivityType } from "@/interface"
 import { Loader, LoaderGrid } from "@/components/Loader"
@@ -13,7 +16,7 @@ import { MapButton } from "@/components/Map"
 import { useRecoilValue } from "recoil"
 import { filterState } from "@/atom"
 
-export default function ActivitiesPage() {
+export default function ActivityPage() {
   const router = useRouter()
   const ref = useRef<HTMLDivElement | null>(null)
   const filterValue = useRecoilValue(filterState)
@@ -25,7 +28,6 @@ export default function ActivitiesPage() {
     category: filterValue.category,
   }
 
-  // activities 데이터를 불러오기 위한 함수
   const fetchActivities = async ({ pageParam = 1 }) => {
     const { data } = await axios("/api/activities?page=" + pageParam, {
       params: {
@@ -38,7 +40,6 @@ export default function ActivitiesPage() {
     return data
   }
 
-  // useInfiniteQuery로 무한 스크롤 처리
   const {
     data: activities,
     isFetching,
@@ -53,8 +54,7 @@ export default function ActivitiesPage() {
   })
 
   if (isError) {
-    console.error("Activities API Fetching Error:", isError)
-    return <div>Failed to load activities. Please try again later.</div>
+    throw new Error("Activity API Fetching Error")
   }
 
   useEffect(() => {
@@ -65,11 +65,11 @@ export default function ActivitiesPage() {
         fetchNextPage()
       }, 500)
     }
-    return () => clearTimeout(timerId)
   }, [fetchNextPage, hasNextPage, isPageEnd])
 
   return (
     <>
+      <CategoryList />
       <GridLayout>
         {isLoading || isFetching ? (
           <LoaderGrid />

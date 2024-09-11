@@ -7,6 +7,8 @@ export interface FilterProps {
   checkOut: string
   guest: number
   category: string
+  startDate?: string
+  endDate?: string
 }
 
 export interface FilterComponentProps {
@@ -23,23 +25,19 @@ export interface FilterLayoutProps {
 
 export interface LikeType {
   id: number
-  roomId?: number
-  activityId?: number // Activity에 대한 좋아요
+  roomId: number
   userId: number
   createdAt: string
-  room?: RoomType
-  activity?: ActivityType // Activity 관계 추가
+  room: RoomType
 }
 
 export interface CommentType {
   id: number
   createdAt: string
-  roomId?: number
-  activityId?: number // Activity에 대한 댓글
+  roomId: number
   userId: string
   body: string
-  room?: RoomType
-  activity?: ActivityType // Activity 관계 추가
+  room: RoomType
   user: UserType
 }
 
@@ -81,26 +79,6 @@ export interface RoomType {
   updatedAt?: string
 }
 
-export interface ActivityType {
-  id: number
-  images: string[]
-  imageKeys?: string[]
-  title: string
-  address: string
-  desc?: string
-  price: number
-  category: string
-  lat: string
-  lng: string
-  user?: UserType
-  userId?: number
-  likes?: LikeType[]
-  comments?: CommentType[]
-  bookings?: BookingType[] // 체험 예약 기능이 있으면 BookingType과 연관
-  createdAt?: string
-  updatedAt?: string
-}
-
 interface Account {
   id: string
   provider: string
@@ -113,7 +91,6 @@ export interface UserType {
   image: string
   desc?: string
   rooms?: RoomType[]
-  activities?: ActivityType[] // 사용자가 생성한 체험들
   accounts: Account[]
   address?: string
   phone?: string
@@ -150,8 +127,7 @@ export interface BookingParamsProps {
 
 export interface BookingType {
   id: number
-  roomId?: number
-  activityId?: number // Activity에 대한 예약
+  roomId: number
   userId: string
   checkIn: string
   checkOut: string
@@ -159,10 +135,9 @@ export interface BookingType {
   totalAmount: number
   totalDays: number
   status: "SUCCESS" | "CANCEL"
-  room?: RoomType
-  activity?: ActivityType // Activity 관계 추가
+  room: RoomType
   user: UserType
-  createdAt: string
+  createAt: string
   updatedAt: string
 }
 
@@ -192,4 +167,35 @@ export interface RoomFormType {
 
 export interface SearchProps {
   q: string | null
+}
+
+export interface ActivityType {
+  id: number
+  title: string
+  images: string[]
+  imageKeys: string[]
+  address?: string
+  lat?: string
+  lng?: string
+  category: string
+  desc?: string
+  price: number
+  userId: string
+  createdAt: string
+  likes?: LikeType[]
+  comments?: Comment[]
+  bookings?: BookingType[]
+  user: UserType
+  updatedAt: string
+}
+
+export interface ActivityFormType {
+  title: string
+  desc: string
+  price: number
+  address?: string
+  images: string[]
+  category?: string
+  lat?: string
+  lng?: string
 }
