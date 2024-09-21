@@ -2,19 +2,17 @@
 
 import { useSession } from "next-auth/react"
 import Link from "next/link"
-import { AiOutlineUser, AiOutlineHeart, AiOutlineComment } from "react-icons/ai"
 import { BsHouseAdd, BsHouseCheck, BsBookmark } from "react-icons/bs"
 import { MdOutlineSportsEsports, MdSportsEsports } from "react-icons/md"
+import SwitchRoleButton from "@/components/SwitchRoleButton" // 경로 조정
 
 export default function SellerMyPage() {
   const { data: session, status } = useSession()
 
-  // 세션 로딩 중일 때 처리
   if (status === "loading") {
     return <p>로딩 중...</p>
   }
 
-  // 세션이 없는 경우(비인증 상태)
   if (status === "unauthenticated") {
     return (
       <div>
@@ -35,8 +33,9 @@ export default function SellerMyPage() {
         </div>
       </div>
 
+      <SwitchRoleButton isSeller={true} />
+
       <div className="grid md:grid-cols-3 gap-4 mt-12 mb-20">
-        {/* 판매자 전용: 숙소 등록 */}
         <Link
           href="/rooms/register/category"
           className="shadow-lg rounded-lg flex flex-col justify-between p-4 gap-12 hover:shadow-xl"
@@ -47,8 +46,6 @@ export default function SellerMyPage() {
             <h2 className="text-sm text-gray-500">나의 숙소 등록하기</h2>
           </div>
         </Link>
-
-        {/* 판매자 전용: 숙소 관리 */}
         <Link
           href="/users/rooms"
           className="shadow-lg rounded-lg flex flex-col justify-between p-4 gap-12 hover:shadow-xl"
@@ -59,8 +56,6 @@ export default function SellerMyPage() {
             <h2 className="text-sm text-gray-500">나의 숙소 관리하기</h2>
           </div>
         </Link>
-
-        {/* 판매자 전용: 체험활동 등록 */}
         <Link
           href="/activities/register/category"
           className="shadow-lg rounded-lg flex flex-col justify-between p-4 gap-12 hover:shadow-xl"
@@ -71,8 +66,6 @@ export default function SellerMyPage() {
             <h2 className="text-sm text-gray-500">나의 체험활동 등록하기</h2>
           </div>
         </Link>
-
-        {/* 판매자 전용: 체험활동 관리 */}
         <Link
           href="/users/activities"
           className="shadow-lg rounded-lg flex flex-col justify-between p-4 gap-12 hover:shadow-xl"
@@ -83,8 +76,6 @@ export default function SellerMyPage() {
             <h2 className="text-sm text-gray-500">나의 체험활동 관리하기</h2>
           </div>
         </Link>
-
-        {/* 판매자 전용: 나의 숙소 예약 내역 */}
         <Link
           href="/seller/bookings"
           className="shadow-lg rounded-lg flex flex-col justify-between p-4 gap-12 hover:shadow-xl"

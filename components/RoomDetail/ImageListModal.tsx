@@ -1,21 +1,23 @@
-import { BLUR_DATA_URL } from '@/constants'
-import { RoomType } from '@/interface'
-import { Dialog, Transition } from '@headlessui/react'
-import Image from 'next/image'
-import { Fragment, SetStateAction, useState } from 'react'
+import { BLUR_DATA_URL } from "@/constants"
+import { RoomType } from "@/interface"
+import { Dialog, Transition } from "@headlessui/react"
+import Image from "next/image"
+import { Fragment } from "react"
 
-export default function ImageListModal({ 
-  isOpen, 
+export default function ImageListModal({
+  isOpen,
   closeModal,
   data,
-}: { 
-  isOpen: boolean 
-  closeModal: () => void 
+}: {
+  isOpen: boolean
+  closeModal: () => void
   data: RoomType
 }) {
+  // 기본 이미지 설정
+  const defaultImage = "/images/default-room.jpg"
+
   return (
     <>
-
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-[100]" onClose={closeModal}>
           <Transition.Child
@@ -49,7 +51,30 @@ export default function ImageListModal({
                     이미지 전체 보기
                   </Dialog.Title>
                   <div className="mt-10 mb-20 max-w-xl mx-auto flex flex-col gap-4">
-                    {data?.images?.map((img) => <Image key={img} alt='room img' src={img} width={1000} height={1000} className='mx-auto' placeholder='blur' blurDataURL={BLUR_DATA_URL}/>)}
+                    {data?.images?.length > 0 ? (
+                      data.images.map((img) => (
+                        <Image
+                          key={img}
+                          alt="room img"
+                          src={img}
+                          width={1000}
+                          height={1000}
+                          className="mx-auto"
+                          placeholder="blur"
+                          blurDataURL={BLUR_DATA_URL}
+                        />
+                      ))
+                    ) : (
+                      <Image
+                        alt="default room img"
+                        src={defaultImage}
+                        width={1000}
+                        height={1000}
+                        className="mx-auto"
+                        placeholder="blur"
+                        blurDataURL={BLUR_DATA_URL}
+                      />
+                    )}
                   </div>
 
                   <div className="mt-4">

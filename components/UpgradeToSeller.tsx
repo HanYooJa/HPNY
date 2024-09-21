@@ -3,10 +3,33 @@
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import axios from "axios"
+import { useEffect, useState } from "react"
 
 export default function UpgradeToSeller() {
   const { data: session } = useSession()
   const router = useRouter()
+  const [isEligible, setIsEligible] = useState(false)
+
+  useEffect(() => {
+    if (session?.user?.role === "USER") {
+      checkInitialRole().then((canUpgrade) => {
+        setIsEligible(canUpgrade)
+      })
+    }
+  }, [session])
+
+  const checkInitialRole = async () => {
+    try {
+      const { data } = await axios.get(
+        `/api/user-role?userId=${session?.user?.id}`,
+      )
+      console.log("초기 역할 확인 결과:", data) // 로그 추가
+      return data.initialRole !== "USER"
+    } catch (error) {
+      console.error("Failed to check initial role:", error)
+      return false
+    }
+  }
 
   const handleUpgrade = async () => {
     try {
@@ -14,38 +37,35 @@ export default function UpgradeToSeller() {
         throw new Error("User ID is not available.")
       }
 
-      // API를 호출하여 판매자로 업그레이드
       const response = await axios.post("/api/upgrade-to-seller", {
         userId: session.user.id,
       })
 
       alert(response.data.message)
 
-      // 성공적으로 업그레이드되면 판매자 마이페이지로 이동
       router.push("/seller/mypage")
     } catch (error) {
-      // AxiosError인지 확인
       if (axios.isAxiosError(error)) {
         console.error("판매자 전환 실패:", error)
         alert(
           `판매자 전환에 실패했습니다: ${error.response?.data?.error || error.message}`,
         )
       } else if (error instanceof Error) {
-        // 일반 JavaScript 에러인 경우
         console.error("판매자 전환 실패:", error)
         alert(`판매자 전환에 실패했습니다: ${error.message}`)
       } else {
-        // 알 수 없는 에러인 경우
         console.error("판매자 전환 실패:", error)
         alert("판매자 전환에 실패했습니다: 알 수 없는 오류")
       }
     }
   }
 
-  return (
+  return isEligible ? (
     <div>
       <h1>판매자로 전환</h1>
       <button onClick={handleUpgrade}>판매자로 업그레이드</button>
     </div>
+  ) : (
+    <p>처음부터 사용자로 로그인한 계정은 판매자로 전환할 수 없습니다.</p>
   )
 }

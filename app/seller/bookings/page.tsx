@@ -15,19 +15,19 @@ export default function SellerBookingsPage() {
   const { data: session } = useSession()
   const router = useRouter()
 
+  // 예약 내역을 가져오는 함수
   const fetchBookings = async ({ pageParam = 1 }) => {
-    const { data } = await axios(`/api/bookings?page=` + pageParam, {
+    const { data } = await axios(`/api/seller/bookings?page=` + pageParam, {
       params: {
-        limit: 5,
+        limit: 5, // 한 페이지당 5개의 예약 가져오기
         page: pageParam,
-        userId: session?.user?.id,
-        role: "SELLER", // 판매자 역할을 필터링
       },
     })
 
     return data
   }
 
+  // useInfiniteQuery를 사용하여 무한 스크롤 구현
   const {
     data: bookings,
     fetchNextPage,
