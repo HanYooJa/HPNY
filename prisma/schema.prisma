@@ -62,14 +62,14 @@ model User {
   emailVerified Boolean?
   phone         String?
   address       String?
+  role          UserRole    @default(USER) // 역할 필드 추가
   rooms         Room[]
   accounts      Account[]
   sessions      Session[]
   likes         Like[]
   comments      Comment[]
   bookings      Booking[]
-
-  Activity Activity[]
+  Activity      Activity[]
 }
 
 model Comment {
@@ -81,7 +81,7 @@ model Comment {
   room          Room        @relation(fields: [roomId], references: [id], onDelete: Cascade)
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([userId, roomId])
-  Activity Activity[]
+  Activity      Activity[]
 }
 
 model Like {
@@ -92,7 +92,7 @@ model Like {
   room            Room      @relation(fields: [roomId], references: [id], onDelete: Cascade)
   user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  Activity Activity[]
+  Activity        Activity[]
 }
 
 model Room {
@@ -108,21 +108,21 @@ model Room {
   price               Int
   bedroomDesc         String?
   freeCancel          Boolean     @default(false)
-  selfCheckIn         Boolean    @default(false)
-  officeSpace         Boolean    @default(false)
-  hasMountainView     Boolean    @default(false)
-  hasShampoo          Boolean    @default(false)
-  hasFreeLaundry      Boolean    @default(false)
-  hasAirConditioner   Boolean    @default(false)
-  hasWifi             Boolean    @default(false)
-  hasBarbeque         Boolean    @default(false)
-  hasFreeParking      Boolean    @default(false)
+  selfCheckIn         Boolean     @default(false)
+  officeSpace         Boolean     @default(false)
+  hasMountainView     Boolean     @default(false)
+  hasShampoo          Boolean     @default(false)
+  hasFreeLaundry      Boolean     @default(false)
+  hasAirConditioner   Boolean     @default(false)
+  hasWifi             Boolean     @default(false)
+  hasBarbeque         Boolean     @default(false)
+  hasFreeParking      Boolean     @default(false)
   userId              String?
-  createdAt           DateTime   @default(now())
+  createdAt           DateTime    @default(now())
   likes               Like[]
   comments            Comment[]
   bookings            Booking[]
-  user                User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([userId])
 }
 
@@ -147,7 +147,7 @@ model Booking {
   updatedAt             DateTime   @default(now())
   status                BookingStatus
 
-  Activity Activity[]
+  Activity              Activity[]
 }
 
 model Activity {
@@ -173,4 +173,10 @@ model Activity {
 enum BookingStatus {
   SUCCESS
   CANCEL
+}
+
+// 사용자 역할을 위한 Enum 정의
+enum UserRole {
+  USER
+  SELLER
 }

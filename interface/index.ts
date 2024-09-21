@@ -1,5 +1,6 @@
 import { ReactNode } from "react"
 
+// DetailFilterType과 FilterProps 인터페이스 정의
 export type DetailFilterType = "location" | "checkIn" | "checkOut" | "guest"
 export interface FilterProps {
   location: string
@@ -9,8 +10,10 @@ export interface FilterProps {
   category: string
   startDate?: string
   endDate?: string
+  role?: "USER" | "SELLER" // 역할 필터 추가
 }
 
+// 필터 관련 인터페이스 정의
 export interface FilterComponentProps {
   filterValue: FilterProps
   setFilterValue: React.Dispatch<React.SetStateAction<FilterProps>>
@@ -23,6 +26,7 @@ export interface FilterLayoutProps {
   isShow: boolean
 }
 
+// LikeType과 CommentType 인터페이스 정의
 export interface LikeType {
   id: number
   roomId: number
@@ -48,6 +52,7 @@ export interface CommentApiType {
   totalPage?: number
 }
 
+// RoomType 인터페이스 정의
 export interface RoomType {
   id: number
   images: string[]
@@ -77,13 +82,17 @@ export interface RoomType {
   bookings?: BookingType[]
   createdAt?: string
   updatedAt?: string
+  status?: "AVAILABLE" | "UNAVAILABLE" // 상태 필드 추가
 }
 
+// Account 인터페이스 정의
 interface Account {
   id: string
   provider: string
+  providerAccountId?: string // 제공자 계정 ID 추가
 }
 
+// UserType 인터페이스 정의
 export interface UserType {
   id: number
   email: string
@@ -96,8 +105,10 @@ export interface UserType {
   phone?: string
   comments?: Comment[]
   bookings?: BookingType[]
+  role?: "USER" | "SELLER" // 역할 필드 추가
 }
 
+// FaqType, LocationType 인터페이스 정의
 export interface FaqType {
   id: number
   title: string
@@ -110,6 +121,7 @@ export interface LocationType {
   zoom?: number
 }
 
+// ParamsProps와 BookingParamsProps 인터페이스 정의
 export interface ParamsProps {
   params: { id: string }
 }
@@ -125,6 +137,7 @@ export interface BookingParamsProps {
   }
 }
 
+// BookingType 인터페이스 정의
 export interface BookingType {
   id: number
   roomId: number
@@ -139,8 +152,10 @@ export interface BookingType {
   user: UserType
   createAt: string
   updatedAt: string
+  cancellationReason?: string // 취소 사유 추가
 }
 
+// RoomFormType, SearchProps 인터페이스 정의
 export interface RoomFormType {
   images?: string[]
   imageKeys?: string[]
@@ -169,6 +184,7 @@ export interface SearchProps {
   q: string | null
 }
 
+// ActivityType 및 ActivityFormType 인터페이스 정의
 export interface ActivityType {
   id: number
   title: string
@@ -187,6 +203,7 @@ export interface ActivityType {
   bookings?: BookingType[]
   user: UserType
   updatedAt: string
+  status?: "ACTIVE" | "INACTIVE" // 상태 필드 추가
 }
 
 export interface ActivityFormType {
