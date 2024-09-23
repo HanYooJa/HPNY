@@ -117,11 +117,12 @@ model Room {
   hasWifi             Boolean     @default(false)
   hasBarbeque         Boolean     @default(false)
   hasFreeParking      Boolean     @default(false)
+  views               Int         @default(0) // 조회수 필드 추가
   userId              String?
   createdAt           DateTime    @default(now())
   likes               Like[]
-  comments            Comment[]
-  bookings            Booking[]
+  comments            Comment[]  // 후기와의 관계
+  bookings            Booking[]  // 예약과의 관계
   user                User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([userId])
 }
@@ -161,6 +162,7 @@ model Activity {
   category   String
   desc       String
   price      Int
+  views      Int      @default(0) // 조회수 필드 추가
   userId     String?
   createdAt  DateTime @default(now())
   likes      Like[]

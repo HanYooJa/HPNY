@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useRef } from "react"
+import React, { useEffect, useRef, useState } from "react"
 
 import CategoryList from "@/components/CategoryList"
 import { GridLayout, RoomItem } from "@/components/RoomList"
@@ -29,11 +29,15 @@ export default function Home() {
     category: filterValue.category,
   }
 
+  // 정렬을 위한 상태 추가
+  const [sortBy, setSortBy] = useState("views")
+
   const fetchRooms = async ({ pageParam = 1 }) => {
     const { data } = await axios("/api/rooms?page=" + pageParam, {
       params: {
         limit: 12,
         page: pageParam,
+        sortBy, // 정렬 파라미터 추가
         ...filterParams,
       },
     })
@@ -49,7 +53,7 @@ export default function Home() {
     hasNextPage,
     isError,
     isLoading,
-  } = useInfiniteQuery(["rooms", filterParams], fetchRooms, {
+  } = useInfiniteQuery(["rooms", filterParams, sortBy], fetchRooms, {
     getNextPageParam: (lastPage, pages) =>
       lastPage?.data?.length > 0 ? lastPage.page + 1 : undefined,
   })
@@ -80,6 +84,23 @@ export default function Home() {
   return (
     <>
       <CategoryList />
+
+      {/* 정렬 옵션 추가 */}
+      <div className="mb-4">
+        <label htmlFor="sortBy">정렬 기준: </label>
+        <select
+          id="sortBy"
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="p-2 border rounded"
+        >
+          <option value="views">조회수 순</option>
+          <option value="comments">후기 순</option>
+          <option value="likes">찜한 순</option>
+          <option value="bookings">예약된 순</option>
+        </select>
+      </div>
+
       <GridLayout>
         {isLoading || isFetching ? (
           <LoaderGrid />

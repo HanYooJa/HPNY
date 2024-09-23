@@ -83,6 +83,7 @@ export interface RoomType {
   createdAt?: string
   updatedAt?: string
   status?: "AVAILABLE" | "UNAVAILABLE" // 상태 필드 추가
+  views?: number // 조회수 필드 추가
 }
 
 // Account 인터페이스 정의
@@ -204,6 +205,7 @@ export interface ActivityType {
   user: UserType
   updatedAt: string
   status?: "ACTIVE" | "INACTIVE" // 상태 필드 추가
+  views?: number // 조회수 필드 추가
 }
 
 export interface ActivityFormType {

@@ -103,11 +103,11 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
       for (const imageFile of images) {
         const formData = new FormData()
         formData.append("file", imageFile) // 업로드할 이미지 데이터
-        formData.append("upload_preset", "your_upload_preset") // Cloudinary에서 설정한 upload preset
+        formData.append("upload_preset", "rmif9xfe") // Cloudinary에서 설정한 upload preset
 
         try {
           const res = await axios.post(
-            "https://api.cloudinary.com/v1_1/your_cloud_name/image/upload",
+            "https://api.cloudinary.com/v1_1/duraipozo/image/upload",
             formData,
           )
 

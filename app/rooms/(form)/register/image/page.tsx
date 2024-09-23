@@ -33,7 +33,7 @@ export default function RoomRegisterImage() {
   } = useForm<RoomImageProps>()
 
   // 최대 5장 이미지 업로드 제한
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target
 
     if (!files) return
@@ -43,17 +43,25 @@ export default function RoomRegisterImage() {
     }
 
     const newImages: string[] = []
-    Array.from(files).forEach((file: File) => {
-      const fileReader = new FileReader()
-      fileReader.readAsDataURL(file)
 
-      fileReader.onloadend = (event: ProgressEvent<FileReader>) => {
-        const { result } = event.target as FileReader
-        if (result) {
-          newImages.push(result.toString())
-        }
-      }
-    })
+    // 모든 파일을 읽고 업로드를 기다리기 위해 Promise를 사용
+    await Promise.all(
+      Array.from(files).map(
+        (file: File) =>
+          new Promise<void>((resolve) => {
+            const fileReader = new FileReader()
+            fileReader.readAsDataURL(file)
+
+            fileReader.onloadend = (event: ProgressEvent<FileReader>) => {
+              const { result } = event.target as FileReader
+              if (result) {
+                newImages.push(result.toString())
+              }
+              resolve()
+            }
+          }),
+      ),
+    )
 
     setImages((prevImages) =>
       prevImages ? [...prevImages, ...newImages] : newImages,

@@ -98,3 +98,9 @@ export const searchState = atom<SearchProps>({
     q: null,
   },
 })
+
+// 정렬 상태 추가
+export const sortState = atom({
+  key: "sortState",
+  default: "views", // 기본 정렬은 조회수 순
+})
