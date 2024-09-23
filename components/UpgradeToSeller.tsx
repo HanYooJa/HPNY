@@ -6,7 +6,7 @@ import axios from "axios"
 import { useEffect, useState } from "react"
 
 export default function UpgradeToSeller() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const router = useRouter()
   const [isEligible, setIsEligible] = useState(false)
 
@@ -18,8 +18,10 @@ export default function UpgradeToSeller() {
       }
     }
 
-    checkRoleEligibility()
-  }, [session])
+    if (status === "authenticated") {
+      checkRoleEligibility()
+    }
+  }, [session, status])
 
   const checkInitialRole = async () => {
     if (!session?.user?.id) {
@@ -31,7 +33,7 @@ export default function UpgradeToSeller() {
         `/api/user-role?userId=${session.user.id}`,
       )
       console.log("초기 역할 확인 결과:", data) // 로그 추가
-      return data.initialRole !== "USER"
+      return data.initialRole === "USER" // USER일 때 업그레이드 가능
     } catch (error) {
       console.error("Failed to check initial role:", error)
       return false
@@ -64,6 +66,10 @@ export default function UpgradeToSeller() {
         alert("판매자 전환에 실패했습니다: 알 수 없는 오류")
       }
     }
+  }
+
+  if (status === "loading") {
+    return <p>로딩 중...</p> // 로딩 중일 때 메시지 표시
   }
 
   return isEligible ? (

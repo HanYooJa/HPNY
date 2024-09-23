@@ -6,7 +6,6 @@ import { signIn, useSession } from "next-auth/react"
 import { FcGoogle } from "react-icons/fc"
 import { SiNaver } from "react-icons/si"
 import { RiKakaoTalkFill } from "react-icons/ri"
-
 import toast from "react-hot-toast"
 
 export default function SignInPage() {
@@ -14,29 +13,36 @@ export default function SignInPage() {
   const { status } = useSession()
   const [isSeller, setIsSeller] = useState(false) // 판매자 로그인 여부 상태
 
-  console.log(status)
+  console.log("로그인 상태:", status)
+  console.log("isSeller 상태:", isSeller) // isSeller 값 확인
 
+  // 구글 로그인 핸들러
   const handleClickGoogle = () => {
     try {
-      signIn("google", { callbackUrl: "/" }) // 항상 메인 페이지로 이동
+      console.log("Google 로그인 시도, isSeller:", isSeller) // 디버그용 로그
+      signIn("google", { callbackUrl: `/?isSeller=${isSeller}` }) // isSeller 값을 쿼리 매개변수로 전달
     } catch (e) {
       console.log(e)
       toast.error("다시 시도해주세요")
     }
   }
 
+  // 네이버 로그인 핸들러
   const handleClickNaver = () => {
     try {
-      signIn("naver", { callbackUrl: "/" }) // 항상 메인 페이지로 이동
+      console.log("Naver 로그인 시도, isSeller:", isSeller) // 디버그용 로그
+      signIn("naver", { callbackUrl: `/?isSeller=${isSeller}` }) // isSeller 값을 쿼리 매개변수로 전달
     } catch (e) {
       console.log(e)
       toast.error("다시 시도해주세요")
     }
   }
 
+  // 카카오 로그인 핸들러
   const handleClickKakao = () => {
     try {
-      signIn("kakao", { callbackUrl: "/" }) // 항상 메인 페이지로 이동
+      console.log("Kakao 로그인 시도, isSeller:", isSeller) // 디버그용 로그
+      signIn("kakao", { callbackUrl: `/?isSeller=${isSeller}` }) // isSeller 값을 쿼리 매개변수로 전달
     } catch (e) {
       console.log(e)
       toast.error("다시 시도해주세요")

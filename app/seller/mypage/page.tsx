@@ -1,30 +1,25 @@
 "use client"
 
-import { useEffect } from "react"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { BsHouseAdd, BsHouseCheck, BsBookmark } from "react-icons/bs"
 import { MdOutlineSportsEsports, MdSportsEsports } from "react-icons/md"
-import { useRouter } from "next/navigation"
+import SwitchRoleButton from "@/components/SwitchRoleButton"
 
 export default function SellerMyPage() {
   const { data: session, status } = useSession()
-  const router = useRouter()
-
-  useEffect(() => {
-    if (status === "loading") {
-      return // 로딩 중에는 아무 것도 하지 않음
-    }
-
-    if (status === "unauthenticated") {
-      router.push("/users/signin") // 로그인 페이지로 이동
-    } else if (session?.user?.role === "USER") {
-      router.push("/users/mypage") // 사용자 마이페이지로 이동
-    }
-  }, [session, status, router])
 
   if (status === "loading") {
     return <p>로딩 중...</p>
+  }
+
+  if (status === "unauthenticated") {
+    return (
+      <div>
+        <p>로그인이 필요합니다.</p>
+        <Link href="/users/signin">로그인 페이지로 이동</Link>
+      </div>
+    )
   }
 
   return (
@@ -91,6 +86,10 @@ export default function SellerMyPage() {
             </h2>
           </div>
         </Link>
+      </div>
+
+      <div className="mt-8">
+        <SwitchRoleButton isSeller={true} /> {/* 판매자로 전환 버튼 */}
       </div>
     </div>
   )

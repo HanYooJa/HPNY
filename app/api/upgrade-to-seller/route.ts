@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
-import { authOptions } from "../auth/[...nextauth]/route"
-import prisma from "@/db"
+import { authOptions } from "@/app/api/auth/[...nextauth]/route" // auth 경로를 정확하게 설정하세요
+import prisma from "@/db" // Prisma 클라이언트 파일 경로를 확인하세요
 
 // 판매자 전환 API 핸들러
 export async function POST(req: Request) {
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User not found." }, { status: 404 })
     }
 
-    // userId가 문자열임을 보장하고 역할 업데이트
+    // 역할 업데이트
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: { role: "SELLER" },
