@@ -11,17 +11,24 @@ export default function UpgradeToSeller() {
   const [isEligible, setIsEligible] = useState(false)
 
   useEffect(() => {
-    if (session?.user?.role === "USER") {
-      checkInitialRole().then((canUpgrade) => {
+    const checkRoleEligibility = async () => {
+      if (session?.user?.role === "USER") {
+        const canUpgrade = await checkInitialRole()
         setIsEligible(canUpgrade)
-      })
+      }
     }
+
+    checkRoleEligibility()
   }, [session])
 
   const checkInitialRole = async () => {
+    if (!session?.user?.id) {
+      return false // 세션이 없으면 업그레이드할 수 없음
+    }
+
     try {
       const { data } = await axios.get(
-        `/api/user-role?userId=${session?.user?.id}`,
+        `/api/user-role?userId=${session.user.id}`,
       )
       console.log("초기 역할 확인 결과:", data) // 로그 추가
       return data.initialRole !== "USER"
@@ -42,7 +49,6 @@ export default function UpgradeToSeller() {
       })
 
       alert(response.data.message)
-
       router.push("/seller/mypage")
     } catch (error) {
       if (axios.isAxiosError(error)) {

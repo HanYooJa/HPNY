@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { usePathname } from "next/navigation" // usePathname 추가
 import { AiOutlineMenu, AiOutlineUser } from "react-icons/ai"
 import { GiNightSleep } from "react-icons/gi"
 import { useSession, signOut } from "next-auth/react"
@@ -23,6 +24,7 @@ export default function Navbar() {
   const [showMenu, setShowMenu] = useState<boolean>(false)
   const { status, data: session } = useSession()
   const router = useRouter()
+  const currentPath = usePathname() // usePathname 훅으로 현재 경로 가져오기
 
   return (
     <nav className="h-20 z-[20] border border-b-gray-20 w-full shadow-sm p-4 sm:px-10 flex justify-between items-center align-middle fixed top-0 bg-white">
@@ -37,7 +39,7 @@ export default function Navbar() {
         <button
           type="button"
           onClick={() => router.push("/")}
-          className="font-semibold  my-auto hover:text-lime-600"
+          className="font-semibold my-auto hover:text-lime-600"
         >
           숙소
         </button>
@@ -54,10 +56,16 @@ export default function Navbar() {
       <div className="grow basis-0 hidden md:flex gap-4 align-middle justify-end relative">
         {status === "authenticated" ? (
           <Link
-            href={`/rooms/register/category`}
+            href={
+              currentPath === "/activities"
+                ? "/activities/register/category"
+                : "/rooms/register/category"
+            }
             className="font-semibold text-sm my-auto px-4 py-3 rounded-full hover:bg-gray-50"
           >
-            당신의 공간을 등록해주세요
+            {currentPath === "/activities"
+              ? "당신의 활동을 등록해주세요"
+              : "당신의 공간을 등록해주세요"}
           </Link>
         ) : (
           <Link
@@ -74,7 +82,6 @@ export default function Navbar() {
           className="flex align-middle gap-3 rounded-full border border-gray-20 shadow-sm px-4 py-3 my-auto hover:shadow-lg"
         >
           <AiOutlineMenu />
-
           {status === "authenticated" && session?.user?.image ? (
             <img
               src={session?.user?.image}

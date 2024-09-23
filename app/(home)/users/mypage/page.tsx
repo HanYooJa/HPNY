@@ -1,18 +1,31 @@
 "use client"
 
 import { useSession } from "next-auth/react"
+import { useEffect } from "react"
+import { useRouter } from "next/navigation" // Next.js 13의 useRouter 사용
 import Link from "next/link"
 import { AiOutlineUser, AiOutlineHeart, AiOutlineComment } from "react-icons/ai"
 import { BsBookmark } from "react-icons/bs"
-import SwitchRoleButton from "@/components/SwitchRoleButton"
 
 export default function UserMyPage() {
   const { data: session, status } = useSession()
+  const router = useRouter()
 
+  useEffect(() => {
+    // 세션 상태가 "authenticated"인 경우
+    if (status === "authenticated") {
+      if (session?.user?.role === "SELLER") {
+        router.replace("/seller/mypage") // 판매자일 경우 판매자 마이페이지로 리다이렉션
+      }
+    }
+  }, [session, status, router])
+
+  // 세션이 로딩 중일 때 로딩 메시지 표시
   if (status === "loading") {
     return <p>로딩 중...</p>
   }
 
+  // 인증되지 않은 경우 로그인 요청
   if (status === "unauthenticated") {
     return (
       <div>
@@ -21,11 +34,6 @@ export default function UserMyPage() {
       </div>
     )
   }
-
-  // 판매자 여부 확인
-  const isSeller = session?.user?.role === "SELLER" // "SELLER"로 대문자 확인
-  console.log("현재 역할:", session?.user?.role) // 현재 역할 로그
-  console.log("isSeller 상태:", isSeller) // isSeller 상태 로그
 
   return (
     <div className="mt-10 max-w-5xl mx-auto px-4">
@@ -82,10 +90,6 @@ export default function UserMyPage() {
             <h2 className="text-sm text-gray-500">나의 예약 모아보기</h2>
           </div>
         </Link>
-      </div>
-
-      <div className="mt-8">
-        <SwitchRoleButton isSeller={isSeller} /> {/* 올바르게 전달 */}
       </div>
     </div>
   )

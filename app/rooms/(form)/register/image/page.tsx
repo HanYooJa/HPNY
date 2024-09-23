@@ -1,3 +1,5 @@
+// 기존 파일 전체 코드
+
 /* eslint-disable @next/next/no-img-element */
 "use client"
 
@@ -22,7 +24,8 @@ export default function RoomRegisterImage() {
   const router = useRouter()
   const { data: session } = useSession()
   const [roomForm, setRoomForm] = useRecoilState(roomFormState)
-  const [images, setImages] = useState<string[] | null>(null)
+  const [images, setImages] = useState<File[]>([])
+  const [imagePreviews, setImagePreviews] = useState<string[]>([])
   const [disableSubmit, setDisableSubmit] = useState<boolean>(false)
   const resetRoomForm = useResetRecoilState(roomFormState)
 
@@ -33,69 +36,56 @@ export default function RoomRegisterImage() {
   } = useForm<RoomImageProps>()
 
   // 최대 5장 이미지 업로드 제한
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target
 
     if (!files) return
-    if (files.length + (images?.length || 0) > 5) {
+    if (files.length + images.length > 5) {
       toast.error("최대 5장의 사진만 업로드할 수 있습니다.")
       return
     }
 
-    const newImages: string[] = []
+    const newFiles: File[] = Array.from(files)
+    const newImagePreviews: string[] = []
 
-    // 모든 파일을 읽고 업로드를 기다리기 위해 Promise를 사용
-    await Promise.all(
-      Array.from(files).map(
-        (file: File) =>
-          new Promise<void>((resolve) => {
-            const fileReader = new FileReader()
-            fileReader.readAsDataURL(file)
+    newFiles.forEach((file) => {
+      const fileReader = new FileReader()
+      fileReader.readAsDataURL(file)
+      fileReader.onloadend = () => {
+        if (fileReader.result) {
+          newImagePreviews.push(fileReader.result.toString())
+          setImagePreviews((prev) => [...prev, ...newImagePreviews])
+        }
+      }
+    })
 
-            fileReader.onloadend = (event: ProgressEvent<FileReader>) => {
-              const { result } = event.target as FileReader
-              if (result) {
-                newImages.push(result.toString())
-              }
-              resolve()
-            }
-          }),
-      ),
-    )
-
-    setImages((prevImages) =>
-      prevImages ? [...prevImages, ...newImages] : newImages,
-    )
+    setImages((prevFiles) => [...prevFiles, ...newFiles])
   }
 
-  // Cloudinary 업로드 함수
-  async function uploadImages(images: string[] | null) {
+  // 클라이언트 측 코드: Cloudinary 업로드 함수
+  async function uploadImages(files: File[]) {
     const uploadedImageUrls = []
 
-    if (!images) return
-
-    for (const imageFile of images) {
+    for (const file of files) {
       const formData = new FormData()
+      formData.append("file", file)
 
-      if (imageFile) {
-        formData.append("file", imageFile) // 이미지 파일 추가
+      try {
+        const res = await fetch("/api/cloudinary-upload", {
+          method: "POST",
+          body: formData,
+        })
 
-        if (process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET) {
-          formData.append(
-            "upload_preset",
-            process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
-          )
+        if (res.ok) {
+          const data = await res.json()
+          uploadedImageUrls.push(data.url) // 서버에서 전달된 이미지 URL 사용
+        } else {
+          console.error("Error uploading image:", res.statusText)
+          toast.error("이미지 업로드에 실패했습니다.")
         }
-
-        try {
-          const res = await axios.post(
-            `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-            formData,
-          )
-          uploadedImageUrls.push(res.data.secure_url) // 업로드한 이미지 URL 저장
-        } catch (error) {
-          console.error("Error uploading images: ", error)
-        }
+      } catch (error) {
+        console.error("Error uploading image:", error)
+        toast.error("이미지 업로드 중 문제가 발생했습니다.")
       }
     }
 
@@ -106,6 +96,12 @@ export default function RoomRegisterImage() {
     try {
       setDisableSubmit(true)
       const imageUrls = await uploadImages(images)
+
+      if (!imageUrls || imageUrls.length === 0) {
+        toast.error("이미지 업로드 중 문제가 발생했습니다.")
+        return
+      }
+
       const result = await axios.post("/api/rooms", {
         ...roomForm,
         images: imageUrls,
@@ -173,17 +169,16 @@ export default function RoomRegisterImage() {
           )}
         </div>
         <div className="mt-10 max-w-lg mx-auto flex flex-wrap gap-4">
-          {images &&
-            images?.map((image, index) => (
-              <Image
-                key={index}
-                src={image}
-                alt="미리보기"
-                width={100}
-                height={100}
-                className="rounded-md"
-              />
-            ))}
+          {imagePreviews.map((image, index) => (
+            <Image
+              key={index}
+              src={image}
+              alt="미리보기"
+              width={100}
+              height={100}
+              className="rounded-md"
+            />
+          ))}
         </div>
         <NextButton
           type="submit"

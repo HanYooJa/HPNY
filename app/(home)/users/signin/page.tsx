@@ -18,8 +18,7 @@ export default function SignInPage() {
 
   const handleClickGoogle = () => {
     try {
-      // 판매자 로그인인지 여부에 따라 다른 callbackUrl 설정
-      signIn("google", { callbackUrl: isSeller ? "/seller-dashboard" : "/" })
+      signIn("google", { callbackUrl: "/" }) // 항상 메인 페이지로 이동
     } catch (e) {
       console.log(e)
       toast.error("다시 시도해주세요")
@@ -28,7 +27,7 @@ export default function SignInPage() {
 
   const handleClickNaver = () => {
     try {
-      signIn("naver", { callbackUrl: isSeller ? "/seller-dashboard" : "/" })
+      signIn("naver", { callbackUrl: "/" }) // 항상 메인 페이지로 이동
     } catch (e) {
       console.log(e)
       toast.error("다시 시도해주세요")
@@ -37,7 +36,7 @@ export default function SignInPage() {
 
   const handleClickKakao = () => {
     try {
-      signIn("kakao", { callbackUrl: isSeller ? "/seller-dashboard" : "/" })
+      signIn("kakao", { callbackUrl: "/" }) // 항상 메인 페이지로 이동
     } catch (e) {
       console.log(e)
       toast.error("다시 시도해주세요")

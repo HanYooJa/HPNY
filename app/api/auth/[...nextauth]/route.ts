@@ -2,14 +2,12 @@
 import NextAuth, { NextAuthOptions } from "next-auth"
 import prisma from "@/db"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
-
 import GoogleProvider from "next-auth/providers/google"
 import NaverProvider from "next-auth/providers/naver"
 import KakaoProvider from "next-auth/providers/kakao"
 
 // 판매자 업그레이드 조건을 확인하는 함수
 function shouldUpgradeToSeller(user: any): boolean {
-  // 실제 로직으로 대체: 예를 들어 특정 이메일 도메인 사용
   return user.email?.endsWith("@example.com")
 }
 
@@ -38,28 +36,40 @@ export const authOptions: NextAuthOptions = {
     signIn: "/users/signin", // 로그인 페이지 설정
   },
   callbacks: {
-    // 세션에 role 추가
-    session: async ({ session, token }) => {
+    // 세션에 role과 initialRole 및 accessToken 추가
+    async session({ session, token }) {
+      console.log("Session callback - token:", token) // 디버그용
+      console.log("Session callback - session:", session) // 디버그용
+
       return {
         ...session,
         user: {
           ...session.user,
           id: token.sub,
-          role: token.role || "USER", // role 기본값 설정
+          role: token.role || "USER", // 현재 역할
+          isSeller: token.role === "SELLER", // isSeller 값 추가
+          initialRole: token.initialRole || token.role || "USER", // 초기 역할 설정
         },
+        accessToken: token.accessToken, // accessToken 추가
       }
     },
-    // JWT에 role 추가 및 특정 조건에 따른 업그레이드
-    jwt: async ({ user, token }) => {
+    // JWT에 role, initialRole 및 accessToken 추가
+    async jwt({ token, user, account }) {
+      console.log("JWT callback - user:", user) // 디버그용
+      console.log("JWT callback - token (before):", token) // 디버그용
+
+      if (account) {
+        token.accessToken = account.access_token // accessToken 저장
+      }
+
       if (user) {
-        // 데이터베이스에서 사용자의 현재 정보 가져오기
         const dbUser = await prisma.user.findUnique({
           where: { id: user.id },
         })
 
         if (dbUser) {
-          // 특정 조건에 따라 SELLER로 업그레이드
-          if (shouldUpgradeToSeller(dbUser) && dbUser.role !== "SELLER") {
+          // 모든 사용자가 SELLER로 업그레이드 가능하도록 수정
+          if (dbUser.role !== "SELLER" && shouldUpgradeToSeller(dbUser)) {
             await prisma.user.update({
               where: { id: user.id },
               data: { role: "SELLER" },
@@ -68,10 +78,17 @@ export const authOptions: NextAuthOptions = {
           } else {
             token.role = dbUser.role || "USER" // role을 항상 토큰에 반영
           }
+
           token.sub = user.id
+
+          // 최초 설정 시에만 initialRole을 설정 (이미 설정되어 있다면 변경하지 않음)
+          if (!token.initialRole) {
+            token.initialRole = dbUser.role || "USER"
+          }
         }
       }
 
+      console.log("JWT callback - token (after):", token) // 디버그용
       return token
     },
   },

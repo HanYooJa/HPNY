@@ -12,16 +12,17 @@ export default function Stepper({
   className = "",
 }: StepperProps) {
   return (
-    <div
-      className={cn("grid", `grid-cols-${totalSteps}`, "gap-3 h-1", className)}
-    >
-      {/* 활성화된 검정 스텝 */}
-      {[...Array(count)]?.map((_, i) => (
-        <div key={`active-${i}`} className="bg-black w-full rounded-md" />
-      ))}
-      {/* 비활성화된 회색 스텝 */}
-      {[...Array(totalSteps - count)]?.map((_, i) => (
-        <div key={`inactive-${i}`} className="bg-gray-300 w-full rounded-md" />
+    <div className={cn("flex gap-3 h-4 w-full justify-center ", className)}>
+      {" "}
+      {/* w-full과 justify-center를 사용해 중앙 정렬 */}
+      {[...Array(totalSteps)].map((_, i) => (
+        <div
+          key={`step-${i}`}
+          className={cn(
+            "flex-grow h-full rounded-md",
+            i < count ? "bg-black" : "bg-gray-300", // 활성화된 스텝과 비활성화된 스텝을 구분
+          )}
+        />
       ))}
     </div>
   )

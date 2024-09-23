@@ -12,19 +12,34 @@ import { BiChevronRight } from "react-icons/bi"
 import { useInfiniteQuery } from "react-query"
 
 export default function SellerBookingsPage() {
-  const { data: session } = useSession()
+  const { data: session } = useSession() // 세션 정보 가져오기
   const router = useRouter()
 
   // 예약 내역을 가져오는 함수
   const fetchBookings = async ({ pageParam = 1 }) => {
-    const { data } = await axios(`/api/seller/bookings?page=` + pageParam, {
-      params: {
-        limit: 5, // 한 페이지당 5개의 예약 가져오기
-        page: pageParam,
-      },
-    })
+    if (!session || !session.user) {
+      throw new Error("세션이 유효하지 않습니다.")
+    }
 
-    return data
+    try {
+      const { data } = await axios.get(
+        `/api/seller/bookings?page=${pageParam}`,
+        {
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`, // accessToken 포함
+          },
+          params: {
+            limit: 5, // 한 페이지당 5개의 예약 가져오기
+            page: pageParam,
+          },
+        },
+      )
+
+      return data
+    } catch (error) {
+      console.error("예약 내역을 가져오는 중 오류 발생:", error)
+      throw error
+    }
   }
 
   // useInfiniteQuery를 사용하여 무한 스크롤 구현
