@@ -9,7 +9,7 @@ export async function POST(req: Request) {
   console.log("Current session:", session) // 디버깅용 세션 정보 출력
 
   // 세션이 없으면 접근 불가
-  if (!session) {
+  if (!session || !session.user?.id) {
     return NextResponse.json({ error: "Unauthorized access." }, { status: 403 })
   }
 

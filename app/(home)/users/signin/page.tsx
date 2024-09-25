@@ -10,51 +10,39 @@ import toast from "react-hot-toast"
 
 export default function SignInPage() {
   const router = useRouter()
-  const { status } = useSession()
-  const [isSeller, setIsSeller] = useState(false) // 판매자 로그인 여부 상태
+  const { status, data: session } = useSession()
+  const [isSeller, setIsSeller] = useState(false)
 
-  console.log("로그인 상태:", status)
-  console.log("isSeller 상태:", isSeller) // isSeller 값 확인
-
-  // 구글 로그인 핸들러
-  const handleClickGoogle = () => {
-    try {
-      console.log("Google 로그인 시도, isSeller:", isSeller) // 디버그용 로그
-      signIn("google", { callbackUrl: `/?isSeller=${isSeller}` }) // isSeller 값을 쿼리 매개변수로 전달
-    } catch (e) {
-      console.log(e)
-      toast.error("다시 시도해주세요")
+  useEffect(() => {
+    if (status === "authenticated") {
+      console.log("현재 세션:", session) // 세션 로그 추가
+      if (session.user.role === "SELLER") {
+        router.push("/seller/mypage")
+      } else {
+        router.push("/users/mypage")
+      }
+    } else if (status === "unauthenticated") {
+      return
+    } else if (status === "loading") {
+      return
     }
-  }
-
-  // 네이버 로그인 핸들러
-  const handleClickNaver = () => {
-    try {
-      console.log("Naver 로그인 시도, isSeller:", isSeller) // 디버그용 로그
-      signIn("naver", { callbackUrl: `/?isSeller=${isSeller}` }) // isSeller 값을 쿼리 매개변수로 전달
-    } catch (e) {
-      console.log(e)
-      toast.error("다시 시도해주세요")
-    }
-  }
-
-  // 카카오 로그인 핸들러
-  const handleClickKakao = () => {
-    try {
-      console.log("Kakao 로그인 시도, isSeller:", isSeller) // 디버그용 로그
-      signIn("kakao", { callbackUrl: `/?isSeller=${isSeller}` }) // isSeller 값을 쿼리 매개변수로 전달
-    } catch (e) {
-      console.log(e)
-      toast.error("다시 시도해주세요")
-    }
-  }
+  }, [status, session, router])
 
   useEffect(() => {
     if (status === "authenticated") {
       toast.error("접근할 수 없습니다.")
       router.replace("/")
     }
-  }, [router, status])
+  }, [status, router])
+
+  const handleClick = async (provider: string) => {
+    try {
+      await signIn(provider, { callbackUrl: `/?isSeller=${isSeller}` })
+    } catch (e) {
+      console.log(e)
+      toast.error("다시 시도해주세요")
+    }
+  }
 
   return (
     <div className="max-w-xl mx-auto pt-10 pb-24">
@@ -92,7 +80,7 @@ export default function SignInPage() {
       <div className="flex flex-col gap-5 mt-16">
         <button
           type="button"
-          onClick={handleClickGoogle}
+          onClick={() => handleClick("google")}
           className="relative border border-gray-700 rounded-md py-3 text-sm hover:bg-black/5 text-center font-semibold"
         >
           <FcGoogle className="absolute left-5 text-xl my-auto inset-y-0" />
@@ -100,7 +88,7 @@ export default function SignInPage() {
         </button>
         <button
           type="button"
-          onClick={handleClickNaver}
+          onClick={() => handleClick("naver")}
           className="relative border border-gray-700 rounded-md py-3 text-sm hover:bg-black/5 text-center font-semibold"
         >
           <SiNaver className="absolute left-6 text-green-400 my-auto inset-y-0" />
@@ -108,7 +96,7 @@ export default function SignInPage() {
         </button>
         <button
           type="button"
-          onClick={handleClickKakao}
+          onClick={() => handleClick("kakao")}
           className="relative border border-gray-700 rounded-md py-3 text-sm hover:bg-black/5 text-center font-semibold"
         >
           <RiKakaoTalkFill className="absolute left-5 text-yellow-950 text-xl my-auto inset-y-0" />

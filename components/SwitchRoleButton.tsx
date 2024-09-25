@@ -23,6 +23,7 @@ export default function SwitchRoleButton({ isSeller }: { isSeller: boolean }) {
       }
 
       const userId = session.user.id
+      console.log("현재 유저 ID:", userId) // 유저 ID를 확인하는 로그 추가
 
       if (isSeller) {
         // 사용자로 전환
@@ -30,20 +31,32 @@ export default function SwitchRoleButton({ isSeller }: { isSeller: boolean }) {
         console.log("API 응답:", response.data)
 
         alert(response.data.message || "사용자 전환이 완료되었습니다.")
-        await update()
-        window.location.href = "/users/mypage" // 사용자 마이페이지로 이동
+        await update() // 세션 갱신
+
+        // 사용자 마이페이지로 이동
+        router.push("/users/mypage")
       } else {
         // 판매자로 전환
         const response = await axios.post("/api/upgrade-to-seller", { userId })
         console.log("API 응답:", response.data)
 
-        alert(response.data.message || "판매자 전환이 완료되었습니다.")
-        await update()
-        window.location.href = "/seller/mypage" // 판매자 마이페이지로 이동
+        if (response.status === 200) {
+          alert(response.data.message || "판매자 전환이 완료되었습니다.")
+          await update() // 세션 갱신
+          router.push("/seller/mypage") // 판매자 마이페이지로 이동
+        } else {
+          console.error("판매자 전환 실패:", response.data)
+          alert(response.data.error || "판매자 전환에 실패했습니다.")
+        }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error switching role:", error)
-      alert("전환 중 문제가 발생했습니다.")
+      if (error.response) {
+        console.error("API 응답 오류:", error.response.data) // 응답에 대한 오류 로그 추가
+        alert(error.response.data.error || "전환 중 문제가 발생했습니다.")
+      } else {
+        alert("전환 중 문제가 발생했습니다.")
+      }
     } finally {
       setLoading(false)
     }

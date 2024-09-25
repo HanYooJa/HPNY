@@ -1,13 +1,64 @@
 "use client"
 
-import { useSession } from "next-auth/react"
+import { useSession, signIn, getSession } from "next-auth/react"
 import Link from "next/link"
 import { BsHouseAdd, BsHouseCheck, BsBookmark } from "react-icons/bs"
 import { MdOutlineSportsEsports, MdSportsEsports } from "react-icons/md"
-import SwitchRoleButton from "@/components/SwitchRoleButton"
+import axios from "axios"
+import React, { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 export default function SellerMyPage() {
   const { data: session, status } = useSession()
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
+
+  useEffect(() => {
+    const checkRoleAndRedirect = async () => {
+      if (status === "loading") return // 로딩 중일 때는 아무 것도 하지 않음
+
+      const updatedSession = await getSession()
+      console.log("Updated session:", updatedSession)
+
+      if (updatedSession?.user?.role === "SELLER") {
+        // SELLER 역할인 경우 판매자 마이페이지로 리디렉션
+        router.push("/seller/mypage")
+      } else {
+        // SELLER가 아닐 경우 사용자 마이페이지로 리디렉션
+        router.push("/users/mypage")
+      }
+    }
+
+    checkRoleAndRedirect()
+  }, [session, status, router])
+
+  const handleSwitchRole = async () => {
+    setLoading(true)
+    try {
+      if (session?.user?.role === "SELLER") {
+        await axios.post("/api/switch-to-user")
+        alert("사용자로 전환되었습니다.")
+      } else {
+        await axios.post("/api/upgrade-to-seller")
+        alert("판매자로 전환되었습니다.")
+      }
+
+      // 세션을 다시 가져와서 업데이트
+      const updatedSession = await getSession()
+      console.log("Updated session after role switch:", updatedSession)
+
+      if (updatedSession?.user?.role === "SELLER") {
+        router.push("/seller/mypage")
+      } else {
+        router.push("/users/mypage")
+      }
+    } catch (error) {
+      console.error("역할 전환 중 오류 발생:", error)
+      alert("역할 전환에 실패했습니다.")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   if (status === "loading") {
     return <p>로딩 중...</p>
@@ -89,7 +140,18 @@ export default function SellerMyPage() {
       </div>
 
       <div className="mt-8">
-        <SwitchRoleButton isSeller={true} /> {/* 판매자로 전환 버튼 */}
+        <button
+          type="button"
+          onClick={handleSwitchRole}
+          className="bg-blue-600 text-white py-2 px-4 rounded"
+          disabled={loading}
+        >
+          {loading
+            ? "전환 중..."
+            : session?.user?.role === "SELLER"
+              ? "사용자로 전환"
+              : "판매자로 전환"}
+        </button>
       </div>
     </div>
   )

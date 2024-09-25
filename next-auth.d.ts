@@ -15,7 +15,6 @@ declare module "next-auth" {
     accessToken?: string // accessToken 속성 추가
   }
 
-  // User 인터페이스도 확장하여 role, permissions, initialRole, isSeller를 포함하도록 합니다.
   interface User {
     id: string
     name?: string | null
@@ -25,5 +24,19 @@ declare module "next-auth" {
     permissions?: string[] // 추가: permissions 속성
     initialRole?: string // 추가: initialRole 속성
     isSeller?: boolean // 추가: isSeller 속성
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string
+    name?: string | null
+    email?: string | null
+    picture?: string | null
+    role?: string // role 속성 추가
+    permissions?: string[] // 추가: permissions 속성
+    initialRole?: string // 추가: initialRole 속성
+    isSeller?: boolean // 추가: isSeller 속성
+    accessToken?: string // accessToken 속성 추가
   }
 }

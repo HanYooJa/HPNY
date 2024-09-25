@@ -7,8 +7,7 @@ import KakaoProvider from "next-auth/providers/kakao"
 
 // 판매자 업그레이드 조건을 확인하는 함수
 function shouldUpgradeToSeller(user: any): boolean {
-  // 조건을 여기에 추가하세요
-  return user.someConditionToUpgrade // 예: user.isEligibleToUpgrade
+  return user.role === "SELLER" // 조건을 role 값에 기반하여 설정
 }
 
 export const authOptions: NextAuthOptions = {
@@ -36,37 +35,49 @@ export const authOptions: NextAuthOptions = {
     signIn: "/users/signin", // 로그인 페이지 설정
   },
   callbacks: {
+    // 세션에 사용자 정보를 설정하는 콜백
     async session({ session, token }) {
+      console.log("Session callback - token:", token) // 디버깅을 위해 로그 추가
       session.user = {
         ...session.user,
-        id: token.sub || "", // token.sub가 undefined인 경우 빈 문자열로 대체
-        role: typeof token.role === "string" ? token.role : "USER",
+        id: token.sub || "",
+        role: token.role || "USER", // role 정보를 토큰에서 가져옴
         isSeller: token.role === "SELLER",
-        initialRole:
-          typeof token.initialRole === "string" ? token.initialRole : "USER",
+        initialRole: token.initialRole || "USER",
         email: token.email || "",
       }
       return session
     },
+    // JWT 토큰에 사용자 정보를 설정하는 콜백
     async jwt({ token, user, account }) {
       if (account) {
         token.accessToken = account.access_token
       }
 
+      // 최초 로그인 시 실행
       if (user) {
         const dbUser = await prisma.user.findUnique({
           where: { id: user.id },
         })
 
         if (dbUser) {
-          const isSeller = shouldUpgradeToSeller(user) // 업그레이드 조건 확인
-          token.role = isSeller ? "SELLER" : "USER"
-          token.initialRole = token.role
+          // 토큰에 역할 설정
+          token.role = dbUser.role
+          token.initialRole = dbUser.role
           token.email = dbUser.email || ""
-        } else {
-          token.role = "USER"
+        }
+      } else {
+        // 세션 갱신 시 데이터베이스에서 최신 role 가져오기
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.sub },
+        })
+
+        if (dbUser) {
+          token.role = dbUser.role // DB에서 가져온 최신 role 설정
         }
       }
+
+      console.log("JWT callback - token:", token) // 디버깅을 위해 로그 추가
       return token
     },
   },
