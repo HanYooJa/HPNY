@@ -25,6 +25,15 @@ export default function ActivityRegisterInfo() {
   } = useForm<ActivityInfoProps>()
 
   const onSubmit = (data: ActivityInfoProps) => {
+    const lat = activityForm?.lat ? Number(activityForm.lat) : undefined
+    const lng = activityForm?.lng ? Number(activityForm.lng) : undefined
+
+    // lat과 lng가 유효한지 확인
+    if (lat === undefined || lng === undefined || isNaN(lat) || isNaN(lng)) {
+      alert("위도와 경도가 유효하지 않습니다. 다시 시도해주세요.")
+      return
+    }
+
     setActivityForm({
       ...activityForm,
       title: data.title || "",
@@ -33,8 +42,8 @@ export default function ActivityRegisterInfo() {
       address: activityForm?.address || "",
       images: activityForm?.images || [],
       category: activityForm?.category || "",
-      lat: activityForm?.lat || "",
-      lng: activityForm?.lng || "",
+      lat: lat, // 숫자로 변환된 값 설정
+      lng: lng, // 숫자로 변환된 값 설정
     })
     router.push("/activities/register/address")
   }

@@ -1,6 +1,6 @@
 "use client"
 
-import { filterState, sortState } from "@/atom" // sortState import 추가
+import { filterState } from "@/atom" // sortState import 제거
 import { CATEGORY_DATA } from "@/constants"
 import { ACTIVITY_CATEGORY_DATA } from "@/constants" // 활동 카테고리 데이터 import
 import { useRecoilState } from "recoil"
@@ -11,7 +11,6 @@ import { BiReset } from "react-icons/bi"
 
 export default function CategoryList() {
   const [filterValue, setFilterValue] = useRecoilState(filterState)
-  const [sortBy, setSortBy] = useRecoilState(sortState) // sortState 상태 관리
   const pathname = usePathname() // 현재 경로 가져오기
 
   // 페이지에 따라 카테고리 데이터를 변경
@@ -74,26 +73,6 @@ export default function CategoryList() {
             </div>
           </button>
         ))}
-      </div>
-
-      {/* 정렬 옵션 왼쪽으로 이동 */}
-      <div className="fixed top-36 left-6 flex justify-start gap-4 bg-white p-2 z-10">
-        {" "}
-        {/* left-6와 justify-start로 왼쪽 정렬 설정 */}
-        <label htmlFor="sortBy" className="font-semibold">
-          정렬 기준:
-        </label>
-        <select
-          id="sortBy"
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className="p-2 border rounded"
-        >
-          <option value="views">조회수 순</option>
-          <option value="comments">후기 순</option>
-          <option value="likes">찜한 순</option>
-          <option value="bookings">예약된 순</option>
-        </select>
       </div>
     </>
   )

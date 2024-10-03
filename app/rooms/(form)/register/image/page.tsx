@@ -1,5 +1,3 @@
-// 기존 파일 전체 코드
-
 /* eslint-disable @next/next/no-img-element */
 "use client"
 
@@ -35,7 +33,6 @@ export default function RoomRegisterImage() {
     formState: { errors, isSubmitting },
   } = useForm<RoomImageProps>()
 
-  // 최대 5장 이미지 업로드 제한
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target
 
@@ -51,27 +48,31 @@ export default function RoomRegisterImage() {
     newFiles.forEach((file) => {
       const fileReader = new FileReader()
       fileReader.readAsDataURL(file)
+
       fileReader.onloadend = () => {
         if (fileReader.result) {
           newImagePreviews.push(fileReader.result.toString())
-          setImagePreviews((prev) => [...prev, ...newImagePreviews])
         }
       }
     })
 
     setImages((prevFiles) => [...prevFiles, ...newFiles])
+    setImagePreviews((prev) => [...prev, ...newImagePreviews])
   }
 
-  // 클라이언트 측 코드: Cloudinary 업로드 함수
   async function uploadImages(files: File[]) {
-    const uploadedImageUrls = []
+    const uploadedImageUrls: string[] = []
 
     for (const file of files) {
       const formData = new FormData()
       formData.append("file", file)
+      formData.append(
+        "upload_preset",
+        process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!,
+      )
 
       try {
-        const res = await fetch("/api/cloudinary-upload", {
+        const res = await fetch(`/api/cloudinary-upload`, {
           method: "POST",
           body: formData,
         })
@@ -107,16 +108,22 @@ export default function RoomRegisterImage() {
         images: imageUrls,
       })
 
-      if (result.status === 200) {
-        toast.success("숙소를 등록했습니다.")
-        resetRoomForm()
-        router.push("/")
-      } else {
-        toast.error("데이터 생성 중 문제가 발생했습니다.")
-      }
+      console.log("Response Status:", result.status) // 응답 상태 출력
+      toast.success("숙소를 등록했습니다.")
+      resetRoomForm()
+      router.push("/")
     } catch (error) {
-      console.error("Error submitting form: ", error)
-      toast.error("이미지 저장 중 문제가 발생했습니다. 다시 시도해주세요")
+      if (axios.isAxiosError(error)) {
+        console.error("Axios error:", error.response?.data) // 에러 내용 로그
+        console.error("Status code:", error.response?.status) // 상태 코드 로그
+        toast.error(
+          "Error: " + error.response?.data?.error ||
+            "데이터 생성 중 문제가 발생했습니다.",
+        )
+      } else {
+        console.error("Unexpected error:", error)
+        toast.error("예상치 못한 오류가 발생했습니다.")
+      }
     } finally {
       setDisableSubmit(false)
     }
@@ -127,7 +134,7 @@ export default function RoomRegisterImage() {
       <Stepper count={5} totalSteps={5} />
       <form
         className="mt-10 flex flex-col gap-6 px-4"
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSubmit)} // onSubmit을 여기에 연결합니다.
       >
         <h1 className="font-semibold text-lg md:text-2xl text-center">
           숙소의 사진을 추가해주세요

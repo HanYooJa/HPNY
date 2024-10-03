@@ -55,16 +55,18 @@ export interface CommentApiType {
 // RoomType 인터페이스 정의
 export interface RoomType {
   id: number
-  images: string[]
+  images: string[] // 여러 이미지를 저장하는 배열
+  imageUrl?: string // 대표 이미지 URL 속성 추가
   imageKeys?: string[]
   title: string
+  name?: string
   address: string
   desc?: string
   bedroomDesc?: string
   price: number
   category: string
-  lat: string
-  lng: string
+  lat: number
+  lng: number
   user?: UserType
   userId?: number
   freeCancel: boolean
@@ -82,15 +84,15 @@ export interface RoomType {
   bookings?: BookingType[]
   createdAt?: string
   updatedAt?: string
-  status?: "AVAILABLE" | "UNAVAILABLE" // 상태 필드 추가
-  views?: number // 조회수 필드 추가
+  status?: "AVAILABLE" | "UNAVAILABLE"
+  views?: number
 }
 
 // Account 인터페이스 정의
 interface Account {
   id: string
   provider: string
-  providerAccountId?: string // 제공자 계정 ID 추가
+  providerAccountId?: string
 }
 
 // UserType 인터페이스 정의
@@ -106,7 +108,7 @@ export interface UserType {
   phone?: string
   comments?: Comment[]
   bookings?: BookingType[]
-  role?: "USER" | "SELLER" // 역할 필드 추가
+  role?: "USER" | "SELLER"
 }
 
 // FaqType, LocationType 인터페이스 정의
@@ -117,8 +119,8 @@ export interface FaqType {
 }
 
 export interface LocationType {
-  lat?: string | null
-  lng?: string | null
+  lat?: number | null
+  lng?: number | null
   zoom?: number
 }
 
@@ -153,7 +155,7 @@ export interface BookingType {
   user: UserType
   createAt: string
   updatedAt: string
-  cancellationReason?: string // 취소 사유 추가
+  cancellationReason?: string
 }
 
 // RoomFormType, SearchProps 인터페이스 정의
@@ -166,8 +168,8 @@ export interface RoomFormType {
   bedroomDesc?: string
   price?: number
   category?: string
-  lat?: string
-  lng?: string
+  lat?: number
+  lng?: number
   userId?: number
   freeCancel?: boolean
   selfCheckIn?: boolean
@@ -192,8 +194,8 @@ export interface ActivityType {
   images: string[]
   imageKeys: string[]
   address?: string
-  lat?: string
-  lng?: string
+  lat?: number
+  lng?: number
   category: string
   desc?: string
   price: number
@@ -204,8 +206,8 @@ export interface ActivityType {
   bookings?: BookingType[]
   user: UserType
   updatedAt: string
-  status?: "ACTIVE" | "INACTIVE" // 상태 필드 추가
-  views?: number // 조회수 필드 추가
+  status?: "ACTIVE" | "INACTIVE"
+  views?: number
 }
 
 export interface ActivityFormType {
@@ -215,6 +217,6 @@ export interface ActivityFormType {
   address?: string
   images: string[]
   category?: string
-  lat?: string
-  lng?: string
+  lat?: number
+  lng?: number
 }

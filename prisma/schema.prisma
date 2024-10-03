@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -101,8 +98,8 @@ model Room {
   images              String[]
   imageKeys           String[]
   address             String
-  lat                 String
-  lng                 String
+  lat                 Float       // Changed to Float
+  lng                 Float       // Changed to Float
   category            String
   desc                String
   price               Int
@@ -157,8 +154,8 @@ model Activity {
   images     String[]
   imageKeys  String[]
   address    String
-  lat        String
-  lng        String
+  lat        Float    // Changed to Float
+  lng        Float    // Changed to Float
   category   String
   desc       String
   price      Int

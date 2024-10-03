@@ -16,6 +16,15 @@ export default function ActivityRegisterCategory() {
   const [disableSubmit, setDisableSubmit] = useState<boolean>(false)
 
   const handleSubmit = () => {
+    const lat = activityForm?.lat ? Number(activityForm.lat) : undefined
+    const lng = activityForm?.lng ? Number(activityForm.lng) : undefined
+
+    // lat과 lng가 유효한지 확인
+    if (lat === undefined || lng === undefined || isNaN(lat) || isNaN(lng)) {
+      alert("위도와 경도가 유효하지 않습니다. 다시 시도해주세요.")
+      return
+    }
+
     setActivityForm({
       ...activityForm,
       category: selectedCategory,
@@ -24,8 +33,8 @@ export default function ActivityRegisterCategory() {
       desc: activityForm?.desc || "",
       price: activityForm?.price || 0,
       address: activityForm?.address || "",
-      lat: activityForm?.lat || "",
-      lng: activityForm?.lng || "",
+      lat: lat, // number로 변환된 값 설정
+      lng: lng, // number로 변환된 값 설정
     })
 
     router.push("/activities/register/info")

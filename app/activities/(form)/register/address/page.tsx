@@ -11,6 +11,8 @@ import AddressSearch from "@/components/Form/AddressSearch"
 
 interface ActivityAddressProps {
   address?: string
+  lat?: number // number 타입으로 설정
+  lng?: number // number 타입으로 설정
 }
 
 export default function ActivityRegisterAddress() {
@@ -24,6 +26,15 @@ export default function ActivityRegisterAddress() {
   } = useForm<ActivityAddressProps>()
 
   const onSubmit = (data: ActivityAddressProps) => {
+    const lat = activityForm?.lat ? Number(activityForm.lat) : undefined // number로 변환
+    const lng = activityForm?.lng ? Number(activityForm.lng) : undefined // number로 변환
+
+    // lat과 lng가 유효한 숫자인지 확인
+    if (lat === undefined || lng === undefined || isNaN(lat) || isNaN(lng)) {
+      alert("위도와 경도가 유효하지 않습니다. 다시 시도해주세요.")
+      return
+    }
+
     setActivityForm({
       ...activityForm,
       address: data?.address || "", // 기본값 설정
@@ -32,8 +43,8 @@ export default function ActivityRegisterAddress() {
       desc: activityForm?.desc || "", // 기본값 설정
       price: activityForm?.price || 0, // 기본값 설정
       category: activityForm?.category || "", // 기본값 설정
-      lat: activityForm?.lat || "", // 기본값 설정
-      lng: activityForm?.lng || "", // 기본값 설정
+      lat: lat, // number로 변환된 값 설정
+      lng: lng, // number로 변환된 값 설정
     })
 
     router.push("/activities/register/image")

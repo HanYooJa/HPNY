@@ -9,7 +9,7 @@ import React, { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 
 export default function SellerMyPage() {
-  const { data: session, status } = useSession()
+  const { data: session, status, update } = useSession() // 세션 업데이트 기능 추가
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
@@ -17,20 +17,16 @@ export default function SellerMyPage() {
     const checkRoleAndRedirect = async () => {
       if (status === "loading") return // 로딩 중일 때는 아무 것도 하지 않음
 
-      const updatedSession = await getSession()
-      console.log("Updated session:", updatedSession)
+      const sessionData = await getSession()
+      console.log("Updated session:", sessionData)
 
-      if (updatedSession?.user?.role === "SELLER") {
-        // SELLER 역할인 경우 판매자 마이페이지로 리디렉션
-        router.push("/seller/mypage")
-      } else {
-        // SELLER가 아닐 경우 사용자 마이페이지로 리디렉션
-        router.push("/users/mypage")
+      if (sessionData?.user?.role !== "SELLER") {
+        router.push("/users/mypage") // SELLER가 아닐 경우 사용자 마이페이지로 리디렉션
       }
     }
 
     checkRoleAndRedirect()
-  }, [session, status, router])
+  }, [status, router])
 
   const handleSwitchRole = async () => {
     setLoading(true)
@@ -44,10 +40,12 @@ export default function SellerMyPage() {
       }
 
       // 세션을 다시 가져와서 업데이트
-      const updatedSession = await getSession()
-      console.log("Updated session after role switch:", updatedSession)
+      await update() // 세션을 업데이트하여 변경된 역할을 반영
+      const newSession = await getSession() // 새로운 세션 확인
+      console.log("Updated session after role switch:", newSession)
 
-      if (updatedSession?.user?.role === "SELLER") {
+      // 역할에 따라 적절한 페이지로 리디렉션
+      if (newSession?.user?.role === "SELLER") {
         router.push("/seller/mypage")
       } else {
         router.push("/users/mypage")

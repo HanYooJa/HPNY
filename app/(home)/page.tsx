@@ -1,21 +1,26 @@
 "use client"
 import React, { useEffect, useRef, useState } from "react"
-
 import CategoryList from "@/components/CategoryList"
 import { GridLayout, RoomItem } from "@/components/RoomList"
-import { useInfiniteQuery } from "react-query"
+import { useInfiniteQuery, useQuery } from "react-query"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
-
 import axios from "axios"
-
 import { RoomType } from "@/interface"
 import { Loader, LoaderGrid } from "@/components/Loader"
 import useIntersectionObserver from "@/hooks/useIntersectionObserver"
-
 import { MapButton } from "@/components/Map"
 import { useRecoilValue } from "recoil"
 import { filterState } from "@/atom"
+import Slider from "react-slick"
+import "slick-carousel/slick/slick.css"
+import "slick-carousel/slick/slick-theme.css"
+
+// "이달의 숙소" 데이터를 가져오는 함수
+const fetchTopBookedRooms = async () => {
+  const { data } = await axios.get("/api/rooms/top-booked")
+  return data
+}
 
 export default function Home() {
   const router = useRouter()
@@ -30,7 +35,7 @@ export default function Home() {
   }
 
   // 정렬을 위한 상태 추가
-  const [sortBy, setSortBy] = useState("views")
+  const [sortBy, setSortBy] = useState("bookings")
 
   const fetchRooms = async ({ pageParam = 1 }) => {
     const { data } = await axios("/api/rooms?page=" + pageParam, {
@@ -58,6 +63,22 @@ export default function Home() {
       lastPage?.data?.length > 0 ? lastPage.page + 1 : undefined,
   })
 
+  const {
+    data: topBookedRooms,
+    isLoading: isTopLoading,
+    isError: isTopError,
+  } = useQuery("topBookedRooms", fetchTopBookedRooms)
+
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+  }
+
   if (isError) {
     throw new Error("Room API Fetching Error")
   }
@@ -83,11 +104,69 @@ export default function Home() {
 
   return (
     <>
+      {/* 이달의 숙소 섹션 */}
+      <section className="relative mb-8 mt-20">
+        {" "}
+        <h2 className="text-2xl font-bold mb-4 text-center relative z-10">
+          이달의 숙소
+        </h2>
+        <div className="text-center relative z-10">
+          <h5 className="font-bold">숙소 찾아보기가 귀찮으시죠~?</h5>
+          <h6 className="font-bold">고민하지말고 이달의 숙소 예약 GO!</h6>
+        </div>
+        {isTopLoading ? (
+          <Loader />
+        ) : isTopError ? (
+          <div className="text-center text-red-500">
+            이달의 숙소 데이터를 불러오는 중 오류가 발생했습니다.
+          </div>
+        ) : (
+          <Slider
+            {...sliderSettings}
+            className="mx-auto w-full overflow-hidden"
+          >
+            {topBookedRooms?.data?.map((room: RoomType) => (
+              <div
+                key={room.id}
+                className="flex flex-col items-center justify-center p-4 bg-white shadow-lg rounded-lg"
+              >
+                {/* 이미지 */}
+                <img
+                  src={room.imageUrl || "/default-image.jpg"}
+                  alt={room.title}
+                  className="w-64 h-48 object-cover mx-auto rounded-lg"
+                />
+
+                {/* 숙소명 및 예약 횟수 */}
+                <h3 className="text-lg mt-3 font-semibold text-center">
+                  {room.title}
+                </h3>
+                <p className="text-gray-500 text-center mt-1">
+                  예약 횟수: {room.bookings?.length ?? 0}
+                </p>
+
+                {/* 자세히 보기 버튼 중앙 정렬 */}
+                <div className="flex justify-center w-full">
+                  <button
+                    onClick={() => router.push(`/rooms/${room.id}`)}
+                    className="mt-2 px-4 py-2 bg-lime-500 text-white text-sm rounded hover:bg-lime-600 transition"
+                  >
+                    자세히 보기
+                  </button>
+                </div>
+              </div>
+            ))}
+          </Slider>
+        )}
+      </section>
+
       <CategoryList />
 
-      {/* 정렬 옵션 추가 */}
-      <div className="mb-4">
-        <label htmlFor="sortBy">정렬 기준: </label>
+      {/* 정렬 옵션 왼쪽 배치 */}
+      <div className="mb-4 text-left pl-6">
+        <label htmlFor="sortBy" className="font-semibold mr-2">
+          정렬 기준:
+        </label>
         <select
           id="sortBy"
           value={sortBy}
@@ -115,16 +194,6 @@ export default function Home() {
         )}
       </GridLayout>
       <MapButton onClick={() => router.push("/map")} />
-
-      {/* 판매자인 경우 대시보드로 이동하는 버튼 추가 */}
-      {isSeller && (
-        <button
-          onClick={() => router.push("/seller-dashboard")}
-          className="fixed bottom-20 right-5 bg-blue-500 text-white p-3 rounded-full shadow-lg"
-        >
-          판매자 대시보드
-        </button>
-      )}
 
       {(isFetching || hasNextPage || isFetchingNextPage) && <Loader />}
       <div className="w-full touch-none h-10 mb-10" ref={ref} />

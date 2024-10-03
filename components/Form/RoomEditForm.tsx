@@ -8,27 +8,21 @@ import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import AddressSearch from "./AddressSearch"
-import { v4 as uuidv4 } from "uuid"
-
-import cn from "classnames"
 import { AiFillCamera } from "react-icons/ai"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import axios from "axios"
+import cn from "classnames"
 
 export default function RoomEditForm({ data }: { data: RoomType }) {
   const router = useRouter()
   const { data: session } = useSession()
   const [images, setImages] = useState<string[] | null>(null)
-  // 기존에 저장된 이미지 키
   const [imageKeys, setImageKeys] = useState<string[] | null>(null)
-  // 새롭게 업로드 되는 이미지 키
   let newImageKeys: string[] = []
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const {
-      target: { files },
-    } = e
+    const { files } = e.target
 
     if (!files) return
     setImages([])
@@ -63,7 +57,6 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
     setValue(title, event?.target?.checked)
   }
 
-  // Cloudinary에서 이미지 삭제하는 함수
   const deleteImages = async () => {
     imageKeys?.forEach(async (key) => {
       try {
@@ -83,7 +76,6 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
     setImageKeys(null)
   }
 
-  // Cloudinary로 이미지 업로드하는 함수
   async function uploadImages(images: string[] | null) {
     const uploadedImageUrls = []
 
@@ -93,17 +85,15 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
     }
 
     if (images === data.images) {
-      // 기존 이미지에서 변경이 없는 경우
       return data.images
     }
 
     try {
-      // Cloudinary에서 이전에 저장된 이미지 삭제
       await deleteImages()
       for (const imageFile of images) {
         const formData = new FormData()
-        formData.append("file", imageFile) // 업로드할 이미지 데이터
-        formData.append("upload_preset", "rmif9xfe") // Cloudinary에서 설정한 upload preset
+        formData.append("file", imageFile)
+        formData.append("upload_preset", "rmif9xfe")
 
         try {
           const res = await axios.post(
@@ -112,8 +102,8 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
           )
 
           const imageUrl = res.data.secure_url
-          newImageKeys.push(res.data.public_id) // Cloudinary의 public_id를 저장
-          uploadedImageUrls.push(imageUrl) // 업로드된 이미지 URL을 저장
+          newImageKeys.push(res.data.public_id)
+          uploadedImageUrls.push(imageUrl)
         } catch (error) {
           console.error("Error uploading images: ", error)
         }
@@ -127,7 +117,6 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
 
   useEffect(() => {
     if (data) {
-      // 모든 필드를 순회하면서 setValue 호출
       Object.keys(data)?.forEach((key) => {
         const field = key as keyof RoomFormType
         if (RoomEditField.includes(field)) {

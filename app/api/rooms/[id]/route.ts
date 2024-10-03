@@ -1,4 +1,3 @@
-// app/api/rooms/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server"
 import db from "@/db"
 
@@ -18,6 +17,8 @@ export async function GET(
         views: true, // 조회수 필드 포함
         category: true,
         price: true,
+        lat: true, // 위도 추가
+        lng: true, // 경도 추가
         // 필요한 다른 필드들도 포함하세요
       },
     })
@@ -28,7 +29,7 @@ export async function GET(
 
     return NextResponse.json(room)
   } catch (error) {
-    console.error(error)
+    console.error("Error fetching room data:", error)
     return NextResponse.json(
       { message: "Failed to fetch room data" },
       { status: 500 },

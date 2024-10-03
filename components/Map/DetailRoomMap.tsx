@@ -2,12 +2,10 @@
 /*global kakao*/
 
 import Script from "next/script"
-import { useQuery } from "react-query"
-import axios from "axios"
 import { RoomType } from "@/interface"
-
-import { DEFAULT_LAT, DEFAULT_LNG, ZOOM_LEVEL } from "@/constants"
+import { useEffect } from "react"
 import { FullPageLoader } from "../Loader"
+import { DEFAULT_LAT, DEFAULT_LNG, ZOOM_LEVEL } from "@/constants"
 
 declare global {
   interface Window {
@@ -16,61 +14,65 @@ declare global {
 }
 
 export default function DetailRoomMap({ data }: { data: RoomType }) {
-  // Kakao Map을 로드하는 함수
   const loadKakaoMap = () => {
+    if (typeof data.lat === "undefined" || typeof data.lng === "undefined") {
+      console.error("위도와 경도가 제공되지 않았습니다.")
+      return
+    }
+
     window.kakao.maps.load(() => {
       const mapContainer = document.getElementById("map")
+      if (!mapContainer) {
+        console.error("지도 컨테이너를 찾을 수 없습니다.")
+        return
+      }
+
       const mapOption = {
-        center: new window.kakao.maps.LatLng(
-          data?.lat || DEFAULT_LAT,
-          data?.lng || DEFAULT_LNG,
-        ),
+        center: new window.kakao.maps.LatLng(data.lat, data.lng),
         level: ZOOM_LEVEL,
       }
 
       const map = new window.kakao.maps.Map(mapContainer, mapOption)
 
-      // 마커 위치 설정
-      const markerPosition = new window.kakao.maps.LatLng(data.lat, data.lng)
+      const marker = new window.kakao.maps.Marker({
+        position: new window.kakao.maps.LatLng(data.lat, data.lng),
+      })
 
-      // 마커 이미지 설정
+      marker.setMap(map)
+
       const imageSrc = "/images/location-pin.png"
       const imageSize = new window.kakao.maps.Size(30, 30)
       const imageOption = { offset: new window.kakao.maps.Point(16, 46) }
-
-      // 마커 이미지를 생성
       const markerImage = new window.kakao.maps.MarkerImage(
         imageSrc,
         imageSize,
         imageOption,
       )
 
-      // 마커 생성
-      const marker = new window.kakao.maps.Marker({
-        position: markerPosition,
-        image: markerImage,
-      })
-
-      // 마커를 지도에 표시
-      marker.setMap(map)
-
-      // 커스텀 오버레이 설정
       const content = `<div class="custom_overlay">${data.price?.toLocaleString()}원</div>`
       const customOverlay = new window.kakao.maps.CustomOverlay({
-        position: markerPosition,
+        position: marker.getPosition(),
         content: content,
       })
       customOverlay.setMap(map)
 
-      // 지도 타입 컨트롤 설정
       const mapTypeControl = new window.kakao.maps.MapTypeControl()
       map.addControl(mapTypeControl, window.kakao.maps.ControlPosition.TOPRIGHT)
 
-      // 줌 컨트롤 설정
       const zoomControl = new window.kakao.maps.ZoomControl()
       map.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT)
     })
   }
+
+  useEffect(() => {
+    if (window.kakao && window.kakao.maps) {
+      if (data.lat && data.lng) {
+        loadKakaoMap()
+      } else {
+        console.error("위도와 경도 값이 제공되지 않았습니다.")
+      }
+    }
+  }, [data])
 
   return (
     <>
@@ -78,8 +80,12 @@ export default function DetailRoomMap({ data }: { data: RoomType }) {
         <Script
           strategy="afterInteractive"
           type="text/javascript"
-          src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_CLIENT}&autoload=false`}
-          onLoad={loadKakaoMap} // onReady -> onLoad로 수정
+          src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_CLIENT}&libraries=services&autoload=false`}
+          onLoad={() => {
+            if (window.kakao && window.kakao.maps) {
+              loadKakaoMap()
+            }
+          }}
         />
       ) : (
         <FullPageLoader />
