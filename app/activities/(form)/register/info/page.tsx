@@ -28,12 +28,6 @@ export default function ActivityRegisterInfo() {
     const lat = activityForm?.lat ? Number(activityForm.lat) : undefined
     const lng = activityForm?.lng ? Number(activityForm.lng) : undefined
 
-    // lat과 lng가 유효한지 확인
-    if (lat === undefined || lng === undefined || isNaN(lat) || isNaN(lng)) {
-      alert("위도와 경도가 유효하지 않습니다. 다시 시도해주세요.")
-      return
-    }
-
     setActivityForm({
       ...activityForm,
       title: data.title || "",

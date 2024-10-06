@@ -201,8 +201,9 @@ export interface ActivityType {
   price: number
   userId: string
   createdAt: string
+  imageUrl?: string // 대표 이미지 URL 속성 추가
   likes?: LikeType[]
-  comments?: Comment[]
+  comments?: CommentType[]
   bookings?: BookingType[]
   user: UserType
   updatedAt: string

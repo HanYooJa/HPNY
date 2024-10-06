@@ -1,7 +1,7 @@
 "use client"
 
 import { filterState } from "@/atom"
-import { RoomType } from "@/interface"
+import { ActivityType } from "@/interface"
 import { useRecoilState, useRecoilValue } from "recoil"
 
 import dayjs from "dayjs"
@@ -9,7 +9,11 @@ import "dayjs/locale/ko"
 import { calculatedFilterState } from "@/atom/selector"
 import { useRouter } from "next/navigation"
 
-export default function BookingSection({ data }: { data: RoomType }) {
+export default function ActivityBookingSection({
+  data,
+}: {
+  data: ActivityType
+}) {
   const router = useRouter()
   const [filterValue, setFilterValue] = useRecoilState(filterState)
   const { dayCount, guestCount } = useRecoilValue(calculatedFilterState)
@@ -19,7 +23,7 @@ export default function BookingSection({ data }: { data: RoomType }) {
 
   const handleSubmit = () =>
     router.push(
-      `/rooms/${data.id}/bookings?checkIn=${filterValue?.checkIn}&checkOut=${filterValue?.checkOut}&guestCount=${guestCount}&totalAmount=${totalAmount}&totalDays=${dayCount}`,
+      `/activities/${data.id}/bookings?checkIn=${filterValue?.checkIn}&checkOut=${filterValue?.checkOut}&guestCount=${guestCount}&totalAmount=${totalAmount}&totalDays=${dayCount}`,
     )
 
   const onChangeCheckIn = (e: any) => {
@@ -51,9 +55,9 @@ export default function BookingSection({ data }: { data: RoomType }) {
             <span className="font-semibold text-lg md:text-xl text-black">
               {data?.price?.toLocaleString()} 원
             </span>{" "}
-            /박
+            /회
           </div>
-          <div className="text-xs">후기 15개</div>
+          <div className="text-xs">후기 {data?.comments?.length ?? 0}개</div>
         </div>
         <form className="mt-2">
           <div className="mt-2">
@@ -107,7 +111,7 @@ export default function BookingSection({ data }: { data: RoomType }) {
         <div className="mt-4 flex flex-col gap-2 border-b border-b-gray-300 pb-4 text-xs md:text-sm">
           <div className="flex justify-between">
             <div className="text-gray-600 underline underline-offset-4">
-              {data?.price?.toLocaleString()} x {dayCount}박
+              {data?.price?.toLocaleString()} x {dayCount}회
             </div>
             <div className="text-gray-500">
               ₩{totalAmount?.toLocaleString()}

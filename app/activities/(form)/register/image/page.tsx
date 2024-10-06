@@ -1,3 +1,4 @@
+// app/activities/(form)/register/image/page.tsx
 /* eslint-disable @next/next/no-img-element */
 "use client"
 
@@ -22,7 +23,7 @@ export default function ActivityRegisterImage() {
   const router = useRouter()
   const { data: session } = useSession()
   const [activityForm, setActivityForm] = useRecoilState(activityFormState)
-  const [images, setImages] = useState<string[] | null>(null)
+  const [images, setImages] = useState<File[]>([]) // File[]로 수정
   const [disableSubmit, setDisableSubmit] = useState<boolean>(false)
   const resetActivityForm = useResetRecoilState(activityFormState)
 
@@ -37,56 +38,38 @@ export default function ActivityRegisterImage() {
     const { files } = e.target
 
     if (!files) return
-    if (files.length + (images?.length || 0) > 5) {
+    if (files.length + images.length > 5) {
       toast.error("최대 5장의 사진만 업로드할 수 있습니다.")
       return
     }
 
-    const newImages: string[] = []
-    Array.from(files).forEach((file: File) => {
-      const fileReader = new FileReader()
-      fileReader.readAsDataURL(file)
-
-      fileReader.onloadend = (event: ProgressEvent<FileReader>) => {
-        const { result } = event.target as FileReader
-        if (result) {
-          newImages.push(result.toString())
-        }
-      }
-    })
-
-    setImages((prevImages) =>
-      prevImages ? [...prevImages, ...newImages] : newImages,
-    )
+    // 파일 배열에 추가
+    setImages((prevImages) => [...prevImages, ...Array.from(files)])
   }
 
-  async function uploadImages(images: string[] | null) {
-    const uploadedImageUrls = []
-
-    if (!images) return
+  async function uploadImages(images: File[]) {
+    // 이미지 타입을 File[]로 수정
+    const uploadedImageUrls: string[] = []
 
     for (const imageFile of images) {
       const formData = new FormData()
+      formData.append("file", imageFile) // 이미지를 직접 FormData에 추가
 
-      if (imageFile) {
-        formData.append("file", imageFile)
+      if (process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET) {
+        formData.append(
+          "upload_preset",
+          process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
+        )
+      }
 
-        if (process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET) {
-          formData.append(
-            "upload_preset",
-            process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
-          )
-        }
-
-        try {
-          const res = await axios.post(
-            `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-            formData,
-          )
-          uploadedImageUrls.push(res.data.secure_url) // 업로드한 이미지 URL 저장
-        } catch (error) {
-          console.error("Error uploading images: ", error)
-        }
+      try {
+        const res = await axios.post(
+          `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+          formData,
+        )
+        uploadedImageUrls.push(res.data.secure_url) // 업로드한 이미지 URL 저장
+      } catch (error) {
+        console.error("Error uploading images: ", error)
       }
     }
 
@@ -96,10 +79,13 @@ export default function ActivityRegisterImage() {
   const onSubmit = async () => {
     try {
       setDisableSubmit(true)
+
+      // 이미지 업로드 및 업로드된 이미지 URL 가져오기
       const imageUrls = await uploadImages(images)
+
       const result = await axios.post("/api/activities", {
         ...activityForm,
-        images: imageUrls,
+        images: imageUrls, // 업로드한 이미지 URL을 전달
       })
 
       if (result.status === 200) {
@@ -111,7 +97,7 @@ export default function ActivityRegisterImage() {
       }
     } catch (error) {
       console.error("Error submitting form: ", error)
-      toast.error("이미지 저장 중 문제가 발생했습니다. 다시 시도해주세요")
+      toast.error("이미지 저장 중 문제가 발생했습니다. 다시 시도해주세요.")
     } finally {
       setDisableSubmit(false)
     }
@@ -165,10 +151,10 @@ export default function ActivityRegisterImage() {
         </div>
         <div className="mt-10 max-w-lg mx-auto flex flex-wrap gap-4">
           {images &&
-            images?.map((image, index) => (
+            images.map((image, index) => (
               <Image
                 key={index}
-                src={image}
+                src={URL.createObjectURL(image)} // 이미지 미리보기
                 alt="미리보기"
                 width={100}
                 height={100}

@@ -1,14 +1,13 @@
-"use client"
-
-import { FieldErrors, UseFormRegister, UseFormSetValue } from "react-hook-form"
-import DaumPostcodeEmbed from "react-daum-postcode"
+// components/Form/AddressSearch.tsx
 import { useState } from "react"
 import Script from "next/script"
+import DaumPostcodeEmbed from "react-daum-postcode"
+import { UseFormRegister, FieldErrors, UseFormSetValue } from "react-hook-form"
 
 interface RoomAddressProps {
   address?: string
-  lat?: number // Change to number
-  lng?: number // Change to number
+  lat?: number
+  lng?: number
 }
 
 interface AddressProps {
@@ -40,7 +39,7 @@ export default function AddressSearch({
       fullAddress += extraAddress !== "" ? ` (${extraAddress})` : ""
     }
 
-    // 주소 값을 저장
+    console.log(`주소: ${fullAddress}`)
     setValue("address", fullAddress)
     setIsOpen(false)
 
@@ -49,19 +48,19 @@ export default function AddressSearch({
       const geocoder = new window.kakao.maps.services.Geocoder()
       geocoder.addressSearch(fullAddress, function (result: any, status: any) {
         if (status === window.kakao.maps.services.Status.OK) {
-          const lat = parseFloat(result[0].y) // Convert to number
-          const lng = parseFloat(result[0].x) // Convert to number
+          const lat = parseFloat(result[0].y)
+          const lng = parseFloat(result[0].x)
           console.log(`위도: ${lat}, 경도: ${lng}`)
 
           // 위도와 경도를 setValue로 설정
-          setValue("lat", lat) // Set lat as number
-          setValue("lng", lng) // Set lng as number
+          setValue("lat", lat)
+          setValue("lng", lng)
         } else {
           console.error("Geocoding 실패", status)
         }
       })
     } else {
-      console.error("Kakao Maps가 로드되지 않았습니다.") // 에러 로그 추가
+      console.error("Kakao Maps가 로드되지 않았습니다.")
     }
   }
 
@@ -69,17 +68,22 @@ export default function AddressSearch({
     <>
       <Script
         strategy="afterInteractive"
-        src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_CLIENT}&libraries=services&autoload=false`}
+        src={`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_CLIENT}&libraries=services&autoload=false`}
         onLoad={() => {
-          window.kakao.maps.load(() => {
-            setIsKakaoMapLoaded(true)
-          })
+          if (window.kakao && window.kakao.maps) {
+            window.kakao.maps.load(() => {
+              console.log("Kakao Maps가 성공적으로 로드되었습니다.")
+              setIsKakaoMapLoaded(true)
+            })
+          } else {
+            console.error("Kakao Maps가 로드되지 않았습니다.")
+          }
         }}
       />
 
       <div className="flex flex-col gap-2">
         <label htmlFor="address" className="text-lg font-semibold">
-          숙소 위치
+          활동 위치
         </label>
         <div className="grid md:grid-cols-4 gap-6">
           <input
@@ -100,6 +104,7 @@ export default function AddressSearch({
           <span className="text-red-600 text-sm">필수 항목입니다.</span>
         )}
       </div>
+
       {isOpen && (
         <div className="mt-4 border border-gray-300 w-full rounded-md p-2 max-w-lg mx-auto">
           <DaumPostcodeEmbed onComplete={handleComplete} />

@@ -13,6 +13,9 @@ const nextConfig = {
       {
         hostname: "res.cloudinary.com",
       },
+      {
+        hostname: "img1.kakaocdn.net", // Kakao 이미지 호스트 추가
+      },
     ],
   },
 }
