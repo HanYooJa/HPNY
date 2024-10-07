@@ -17,22 +17,23 @@ import cn from "classnames"
 export default function RoomEditForm({ data }: { data: RoomType }) {
   const router = useRouter()
   const { data: session } = useSession()
-  const [images, setImages] = useState<string[] | null>(null)
-  const [imageFiles, setImageFiles] = useState<FileList | null>(null)
+  const [images, setImages] = useState<string[] | null>(null) // 이미지 미리보기 URL
+  const [imageFiles, setImageFiles] = useState<FileList | null>(null) // 파일 객체
   const [imageKeys, setImageKeys] = useState<string[] | null>(null)
   let newImageKeys: string[] = []
 
+  // 파일 선택 및 미리보기 처리
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target
 
     if (!files) return
     setImages([])
 
+    const newImageUrls: string[] = []
     Array.from(files).forEach((file: File) => {
-      setImages((val) =>
-        val ? [...val, URL.createObjectURL(file)] : [URL.createObjectURL(file)],
-      )
+      newImageUrls.push(URL.createObjectURL(file))
     })
+    setImages(newImageUrls) // 미리보기 이미지 URL 업데이트
     setImageFiles(files) // 파일 객체 자체 저장
   }
 
@@ -51,6 +52,7 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
     setValue(title, event?.target?.checked)
   }
 
+  // 기존 이미지 삭제
   const deleteImages = async () => {
     imageKeys?.forEach(async (key) => {
       try {
@@ -70,6 +72,7 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
     setImageKeys(null)
   }
 
+  // Cloudinary에 이미지 업로드
   async function uploadImages(files: FileList | null) {
     const uploadedImageUrls = []
 
@@ -83,15 +86,18 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
     }
 
     try {
-      await deleteImages()
+      await deleteImages() // 기존 이미지 삭제 후 새 이미지 업로드
       for (const file of Array.from(files)) {
         const formData = new FormData()
         formData.append("file", file)
-        formData.append("upload_preset", "rmif9xfe")
+        formData.append(
+          "upload_preset",
+          process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "rmif9xfe",
+        )
 
         try {
           const res = await axios.post(
-            "https://api.cloudinary.com/v1_1/duraipozo/image/upload",
+            `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
             formData,
           )
 
@@ -148,7 +154,7 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
           }
         } catch (e) {
           console.log(e)
-          toast.error("데이터 수정중 문제가 생겼습니다.")
+          toast.error("데이터 수정 중 문제가 생겼습니다.")
         }
       })}
     >
@@ -278,7 +284,7 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
                     multiple
                     accept="image/*"
                     className="sr-only"
-                    {...register("images", { required: true })}
+                    {...register("images", { required: true })} // 이미지 필드 등록
                     onChange={handleFileUpload}
                   />
                 </label>
