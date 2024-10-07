@@ -22,8 +22,8 @@ export default function RoomRegisterImage() {
   const router = useRouter()
   const { data: session } = useSession()
   const [roomForm, setRoomForm] = useRecoilState(roomFormState)
-  const [images, setImages] = useState<File[]>([])
-  const [imagePreviews, setImagePreviews] = useState<string[]>([])
+  const [images, setImages] = useState<File[]>([]) // 이미지 파일 객체 배열
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]) // 이미지 미리보기 URL 배열
   const [disableSubmit, setDisableSubmit] = useState<boolean>(false)
   const resetRoomForm = useResetRecoilState(roomFormState)
 
@@ -33,33 +33,26 @@ export default function RoomRegisterImage() {
     formState: { errors, isSubmitting },
   } = useForm<RoomImageProps>()
 
+  // 파일 선택 시 호출되는 함수
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target
-
     if (!files) return
+
     if (files.length + images.length > 5) {
       toast.error("최대 5장의 사진만 업로드할 수 있습니다.")
       return
     }
 
     const newFiles: File[] = Array.from(files)
-    const newImagePreviews: string[] = []
+    const newImagePreviews: string[] = newFiles.map((file) =>
+      URL.createObjectURL(file),
+    )
 
-    newFiles.forEach((file) => {
-      const fileReader = new FileReader()
-      fileReader.readAsDataURL(file)
-
-      fileReader.onloadend = () => {
-        if (fileReader.result) {
-          newImagePreviews.push(fileReader.result.toString())
-          setImagePreviews((prev) => [...prev, ...newImagePreviews])
-        }
-      }
-    })
-
-    setImages((prevFiles) => [...prevFiles, ...newFiles])
+    setImages((prevFiles) => [...prevFiles, ...newFiles]) // 파일 저장
+    setImagePreviews((prev) => [...prev, ...newImagePreviews]) // 미리보기 URL 저장
   }
 
+  // Cloudinary로 이미지 업로드
   async function uploadImages(files: File[]) {
     const uploadedImageUrls: string[] = []
 
@@ -102,6 +95,7 @@ export default function RoomRegisterImage() {
         return
       }
 
+      // 서버로 이미지 및 폼 데이터 전송
       const result = await axios.post("/api/rooms", {
         ...roomForm,
         images: imageUrls,
@@ -112,11 +106,12 @@ export default function RoomRegisterImage() {
         resetRoomForm()
         router.push("/rooms")
       } else {
+        console.error("Error in server response:", result.statusText)
         toast.error("데이터 생성 중 문제가 발생했습니다.")
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        console.error("Axios error:", error.response?.data) // 에러 내용 로그
+        console.error("Axios error:", error.response?.data) // 에러 로그 확인
         toast.error("Error: " + (error.response?.data?.error || "등록 실패"))
       } else {
         console.error("Unexpected error:", error)
@@ -157,7 +152,7 @@ export default function RoomRegisterImage() {
                       multiple
                       accept="image/*"
                       className="sr-only"
-                      {...register("images", { required: true })}
+                      {...register("images", { required: true })} // 이미지 필드 등록
                       onChange={handleFileUpload}
                     />
                   </label>
