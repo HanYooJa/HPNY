@@ -5,13 +5,14 @@ import Link from "next/link"
 import Image from "next/image"
 import { BLUR_DATA_URL } from "@/constants"
 
+// RoomItem 컴포넌트
 export function RoomItem({ room }: { room: RoomType }) {
   return (
     <div key={room.id}>
       <Link href={`/rooms/${room.id}`}>
         <div className="h-[320px] md:h-[240px] overflow-hidden relative z-0">
           <Image
-            src={room?.images?.[0]}
+            src={room?.images?.[0] || "/default-image.jpg"}
             alt={room.title}
             style={{ objectFit: "cover" }}
             fill
@@ -35,6 +36,7 @@ export function RoomItem({ room }: { room: RoomType }) {
   )
 }
 
+// GridLayout 컴포넌트
 export function GridLayout({ children }: { children: ReactNode }) {
   return (
     <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-20 sm:px-4 md:px-8 lg:px-16">

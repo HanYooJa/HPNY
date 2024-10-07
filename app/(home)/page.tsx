@@ -4,7 +4,6 @@ import CategoryList from "@/components/CategoryList"
 import { GridLayout, RoomItem } from "@/components/RoomList"
 import { useInfiniteQuery, useQuery } from "react-query"
 import { useRouter } from "next/navigation"
-import { useSession } from "next-auth/react"
 import axios from "axios"
 import { RoomType } from "@/interface"
 import { Loader, LoaderGrid } from "@/components/Loader"
@@ -15,6 +14,7 @@ import { filterState } from "@/atom"
 import Slider from "react-slick"
 import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
+import RoomItemWithHoverSlider from "@/components/RoomItemWithHoverSlider" // 이달의 숙소에 사용
 
 // "이달의 숙소" 데이터를 가져오는 함수
 const fetchTopBookedRooms = async () => {
@@ -97,16 +97,56 @@ export default function Home() {
     }
   }, [fetchNextPage, hasNextPage, isPageEnd])
 
-  // 세션에서 사용자의 역할이 'seller'인지 확인
-  const { data: session } = useSession()
+  // 개별 숙소에 대한 이미지 슬라이드 로직
+  const [activeRoom, setActiveRoom] = useState<number | null>(null)
+  const [currentImageIndex, setCurrentImageIndex] = useState<{
+    [key: number]: number
+  }>({})
 
-  const isSeller = session?.user?.role === "seller"
+  const handleMouseEnter = (roomId: number, roomImages: string[]) => {
+    if (roomImages.length > 1) {
+      setActiveRoom(roomId)
+      setCurrentImageIndex((prevState) => ({
+        ...prevState,
+        [roomId]: 0, // 처음엔 첫 번째 이미지로 설정
+      }))
+    }
+  }
+
+  const handleMouseLeave = (roomId: number) => {
+    setActiveRoom(null)
+    setCurrentImageIndex((prevState) => ({
+      ...prevState,
+      [roomId]: 0, // 마우스를 떼면 첫 번째 이미지로 되돌림
+    }))
+  }
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout | null = null
+    if (activeRoom !== null) {
+      intervalId = setInterval(() => {
+        setCurrentImageIndex((prevState) => ({
+          ...prevState,
+          [activeRoom]:
+            prevState[activeRoom] !== undefined
+              ? (prevState[activeRoom] + 1) %
+                rooms?.pages
+                  ?.flatMap((page) => page.data)
+                  .find((room: RoomType) => room.id === activeRoom)?.images
+                  .length
+              : 0,
+        }))
+      }, 2000)
+    }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId)
+    }
+  }, [activeRoom, rooms])
 
   return (
     <>
-      {/* 이달의 숙소 섹션 */}
       <section className="relative mb-8 mt-20">
-        {" "}
         <h2 className="text-2xl font-bold mb-4 text-center relative z-10">
           이달의 숙소
         </h2>
@@ -126,35 +166,7 @@ export default function Home() {
             className="mx-auto w-full overflow-hidden"
           >
             {topBookedRooms?.data?.map((room: RoomType) => (
-              <div
-                key={room.id}
-                className="flex flex-col items-center justify-center p-4 bg-white shadow-lg rounded-lg"
-              >
-                {/* 이미지 */}
-                <img
-                  src={room.imageUrl || "/default-image.jpg"}
-                  alt={room.title}
-                  className="w-64 h-48 object-cover mx-auto rounded-lg"
-                />
-
-                {/* 숙소명 및 예약 횟수 */}
-                <h3 className="text-lg mt-3 font-semibold text-center">
-                  {room.title}
-                </h3>
-                <p className="text-gray-500 text-center mt-1">
-                  예약 횟수: {room.bookings?.length ?? 0}
-                </p>
-
-                {/* 자세히 보기 버튼 중앙 정렬 */}
-                <div className="flex justify-center w-full">
-                  <button
-                    onClick={() => router.push(`/rooms/${room.id}`)}
-                    className="mt-2 px-4 py-2 bg-lime-500 text-white text-sm rounded hover:bg-lime-600 transition"
-                  >
-                    자세히 보기
-                  </button>
-                </div>
-              </div>
+              <RoomItemWithHoverSlider key={room.id} room={room} />
             ))}
           </Slider>
         )}
@@ -187,7 +199,21 @@ export default function Home() {
           rooms?.pages?.map((page, index) => (
             <React.Fragment key={index}>
               {page?.data?.map((room: RoomType) => (
-                <RoomItem room={room} key={room.id} />
+                <div
+                  key={room.id}
+                  onMouseEnter={() => handleMouseEnter(room.id, room.images)}
+                  onMouseLeave={() => handleMouseLeave(room.id)}
+                >
+                  <RoomItem
+                    room={{
+                      ...room,
+                      images: [
+                        room.images[currentImageIndex[room.id] || 0] ||
+                          "/default-image.jpg",
+                      ],
+                    }}
+                  />
+                </div>
               ))}
             </React.Fragment>
           ))
