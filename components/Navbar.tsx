@@ -1,8 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { usePathname } from "next/navigation" // usePathname 추가
+import { useRouter, usePathname } from "next/navigation" // useRouter와 usePathname 함께 사용
 import { AiOutlineMenu, AiOutlineUser } from "react-icons/ai"
 import { GiNightSleep } from "react-icons/gi"
 import { useSession, signOut } from "next-auth/react"
@@ -14,8 +13,13 @@ const LOGOUT_USER_MENU = [
   { id: 3, title: "FAQ", url: "/faqs" },
 ]
 
-const LOGIN_USER_MENU = [
-  { id: 1, title: "마이페이지", url: "/users/mypage" },
+// role 타입을 명시적으로 정의 (USER 또는 SELLER)
+const LOGIN_USER_MENU = (role: "USER" | "SELLER") => [
+  {
+    id: 1,
+    title: "마이페이지",
+    url: role === "SELLER" ? "/seller/mypage" : "/users/mypage",
+  },
   { id: 2, title: "FAQ", url: "/faqs" },
   { id: 3, title: "로그아웃", url: "#", signout: true },
 ]
@@ -24,7 +28,7 @@ export default function Navbar() {
   const [showMenu, setShowMenu] = useState<boolean>(false)
   const { status, data: session } = useSession()
   const router = useRouter()
-  const currentPath = usePathname() // usePathname 훅으로 현재 경로 가져오기
+  const currentPath = usePathname() // 현재 경로 가져오기
 
   return (
     <nav className="h-20 z-[20] border border-b-gray-20 w-full shadow-sm p-4 sm:px-10 flex justify-between items-center align-middle fixed top-0 bg-white">
@@ -54,7 +58,7 @@ export default function Navbar() {
       </div>
 
       <div className="grow basis-0 hidden md:flex gap-4 align-middle justify-end relative">
-        {status === "authenticated" ? (
+        {status === "authenticated" && session?.user?.role === "SELLER" && (
           <Link
             href={
               currentPath === "/activities"
@@ -67,7 +71,8 @@ export default function Navbar() {
               ? "당신의 활동을 등록해주세요"
               : "당신의 공간을 등록해주세요"}
           </Link>
-        ) : (
+        )}
+        {status === "unauthenticated" && (
           <Link
             href={`/users/signin`}
             className="font-semibold text-sm my-auto px-4 py-3 rounded-full hover:bg-gray-50"
@@ -109,20 +114,22 @@ export default function Navbar() {
                     {menu.title}
                   </button>
                 ))
-              : LOGIN_USER_MENU.map((menu) => (
-                  <button
-                    type="button"
-                    key={menu.id}
-                    className="h-10 hover:bg-gray-50 pl-3 text-sm text-gray-700 text-left"
-                    onClick={() => {
-                      menu.signout ? signOut({ callbackUrl: "/" }) : null
-                      router.push(menu.url)
-                      setShowMenu(false)
-                    }}
-                  >
-                    {menu.title}
-                  </button>
-                ))}
+              : LOGIN_USER_MENU(session?.user?.role as "USER" | "SELLER").map(
+                  (menu) => (
+                    <button
+                      type="button"
+                      key={menu.id}
+                      className="h-10 hover:bg-gray-50 pl-3 text-sm text-gray-700 text-left"
+                      onClick={() => {
+                        if (menu.signout) signOut({ callbackUrl: "/" })
+                        else router.push(menu.url)
+                        setShowMenu(false)
+                      }}
+                    >
+                      {menu.title}
+                    </button>
+                  ),
+                )}
           </div>
         )}
       </div>

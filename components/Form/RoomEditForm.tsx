@@ -18,6 +18,7 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
   const router = useRouter()
   const { data: session } = useSession()
   const [images, setImages] = useState<string[] | null>(null)
+  const [imageFiles, setImageFiles] = useState<FileList | null>(null)
   const [imageKeys, setImageKeys] = useState<string[] | null>(null)
   let newImageKeys: string[] = []
 
@@ -28,18 +29,11 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
     setImages([])
 
     Array.from(files).forEach((file: File) => {
-      const fileReader = new FileReader()
-      fileReader.readAsDataURL(file)
-
-      fileReader.onloadend = (event: ProgressEvent<FileReader>) => {
-        const { result } = event.target as FileReader
-        if (result) {
-          setImages((val) =>
-            val ? [...val, result?.toString()] : [result?.toString()],
-          )
-        }
-      }
+      setImages((val) =>
+        val ? [...val, URL.createObjectURL(file)] : [URL.createObjectURL(file)],
+      )
     })
+    setImageFiles(files) // 파일 객체 자체 저장
   }
 
   const {
@@ -76,10 +70,10 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
     setImageKeys(null)
   }
 
-  async function uploadImages(images: string[] | null) {
+  async function uploadImages(files: FileList | null) {
     const uploadedImageUrls = []
 
-    if (!images) {
+    if (!files) {
       toast.error("이미지를 한 개 이상 업로드해주세요")
       return
     }
@@ -90,9 +84,9 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
 
     try {
       await deleteImages()
-      for (const imageFile of images) {
+      for (const file of Array.from(files)) {
         const formData = new FormData()
-        formData.append("file", imageFile)
+        formData.append("file", file)
         formData.append("upload_preset", "rmif9xfe")
 
         try {
@@ -139,7 +133,7 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
       className="px-4 md:max-w-4xl mx-auto py-8 my-20 flex flex-col gap-8"
       onSubmit={handleSubmit(async (res) => {
         try {
-          const imageUrls = await uploadImages(images)
+          const imageUrls = await uploadImages(imageFiles) // 이미지 파일 객체 전달
           const result = await axios.patch(`/api/rooms?id=${data.id}`, {
             ...res,
             images: imageUrls,

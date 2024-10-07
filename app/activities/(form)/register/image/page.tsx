@@ -23,7 +23,8 @@ export default function ActivityRegisterImage() {
   const router = useRouter()
   const { data: session } = useSession()
   const [activityForm, setActivityForm] = useRecoilState(activityFormState)
-  const [images, setImages] = useState<File[]>([]) // File[]로 수정
+  const [images, setImages] = useState<File[]>([]) // File[]로 이미지 관리
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]) // Cloudinary에서 받은 URL 저장
   const [disableSubmit, setDisableSubmit] = useState<boolean>(false)
   const resetActivityForm = useResetRecoilState(activityFormState)
 
@@ -47,13 +48,13 @@ export default function ActivityRegisterImage() {
     setImages((prevImages) => [...prevImages, ...Array.from(files)])
   }
 
+  // 이미지 업로드 함수
   async function uploadImages(images: File[]) {
-    // 이미지 타입을 File[]로 수정
     const uploadedImageUrls: string[] = []
 
     for (const imageFile of images) {
       const formData = new FormData()
-      formData.append("file", imageFile) // 이미지를 직접 FormData에 추가
+      formData.append("file", imageFile)
 
       if (process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET) {
         formData.append(
@@ -67,15 +68,20 @@ export default function ActivityRegisterImage() {
           `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
           formData,
         )
-        uploadedImageUrls.push(res.data.secure_url) // 업로드한 이미지 URL 저장
+        const imageUrl = res.data.secure_url // Cloudinary에서 받은 이미지 URL
+        if (imageUrl) {
+          uploadedImageUrls.push(imageUrl) // 이미지 URL을 배열에 저장
+        }
       } catch (error) {
         console.error("Error uploading images: ", error)
+        toast.error("이미지 업로드에 실패했습니다.")
       }
     }
 
     return uploadedImageUrls
   }
 
+  // 이미지 등록 처리
   const onSubmit = async () => {
     try {
       setDisableSubmit(true)
@@ -83,9 +89,17 @@ export default function ActivityRegisterImage() {
       // 이미지 업로드 및 업로드된 이미지 URL 가져오기
       const imageUrls = await uploadImages(images)
 
+      if (imageUrls.length === 0) {
+        toast.error("이미지를 업로드할 수 없습니다.")
+        return
+      }
+
+      // 업로드된 이미지 URL 저장
+      setUploadedImages(imageUrls)
+
       const result = await axios.post("/api/activities", {
         ...activityForm,
-        images: imageUrls, // 업로드한 이미지 URL을 전달
+        images: imageUrls, // 업로드한 이미지 URL을 서버에 전달
       })
 
       if (result.status === 200) {
@@ -149,6 +163,8 @@ export default function ActivityRegisterImage() {
             <span className="text-red-600 text-sm">필수 항목입니다.</span>
           )}
         </div>
+
+        {/* 이미지 미리보기 */}
         <div className="mt-10 max-w-lg mx-auto flex flex-wrap gap-4">
           {images &&
             images.map((image, index) => (
@@ -162,6 +178,22 @@ export default function ActivityRegisterImage() {
               />
             ))}
         </div>
+
+        {/* 업로드된 이미지 미리보기 */}
+        <div className="mt-10 max-w-lg mx-auto flex flex-wrap gap-4">
+          {uploadedImages &&
+            uploadedImages.map((imageUrl, index) => (
+              <Image
+                key={index}
+                src={imageUrl} // 업로드된 이미지 URL 사용
+                alt="업로드된 이미지"
+                width={100}
+                height={100}
+                className="rounded-md"
+              />
+            ))}
+        </div>
+
         <NextButton
           type="submit"
           text="완료"

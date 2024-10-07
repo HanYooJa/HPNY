@@ -37,7 +37,6 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     // 세션에 사용자 정보를 설정하는 콜백
     async session({ session, token }) {
-      console.log("Session callback - token:", token) // 디버깅을 위해 로그 추가
       session.user = {
         ...session.user,
         id: token.sub || "",
@@ -50,34 +49,26 @@ export const authOptions: NextAuthOptions = {
     },
     // JWT 토큰에 사용자 정보를 설정하는 콜백
     async jwt({ token, user, account }) {
-      if (account) {
-        token.accessToken = account.access_token
-      }
-
-      // 최초 로그인 시 실행
+      // 새로운 로그인일 경우 토큰에 사용자 정보 저장
       if (user) {
         const dbUser = await prisma.user.findUnique({
           where: { id: user.id },
         })
 
         if (dbUser) {
-          // 토큰에 역할 설정
-          token.role = dbUser.role
-          token.initialRole = dbUser.role
-          token.email = dbUser.email || ""
-        }
-      } else {
-        // 세션 갱신 시 데이터베이스에서 최신 role 가져오기
-        const dbUser = await prisma.user.findUnique({
-          where: { id: token.sub },
-        })
-
-        if (dbUser) {
-          token.role = dbUser.role // DB에서 가져온 최신 role 설정
+          token.role = dbUser.role // role 저장
+          token.initialRole = dbUser.role // 초기 role 저장
         }
       }
 
-      console.log("JWT callback - token:", token) // 디버깅을 위해 로그 추가
+      // 로그아웃 후 재로그인 시 문제 방지: role을 새롭게 갱신
+      const dbUser = await prisma.user.findUnique({
+        where: { id: token.sub },
+      })
+      if (dbUser) {
+        token.role = dbUser.role // role을 갱신
+      }
+
       return token
     },
   },

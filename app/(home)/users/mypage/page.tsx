@@ -1,24 +1,25 @@
 "use client"
 
-import { useSession, signIn, getSession } from "next-auth/react"
+import { useSession, getSession } from "next-auth/react"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { AiOutlineUser, AiOutlineHeart, AiOutlineComment } from "react-icons/ai"
 import { BsBookmark } from "react-icons/bs"
 import axios from "axios"
+import { useRecoilValue } from "recoil"
+import { roleState } from "@/atom" // roleState import
 
 export default function UserMyPage() {
-  const { data: session, status } = useSession() // 세션 데이터 가져오기
-  const [loading, setLoading] = useState(false) // 로딩 상태 관리
+  const { data: session, status } = useSession()
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const currentRole = useRecoilValue(roleState) // Recoil에서 roleState 값 가져오기
 
-  // 역할 전환 핸들러
   const handleSwitchRole = async () => {
     setLoading(true)
     try {
-      // 현재 역할에 따라 API 호출
-      if (session?.user?.role === "USER") {
+      if (currentRole === "USER") {
         await axios.post("/api/upgrade-to-seller")
         alert("판매자로 전환되었습니다.")
       } else {
@@ -26,12 +27,11 @@ export default function UserMyPage() {
         alert("사용자로 전환되었습니다.")
       }
 
-      // 세션을 강제로 다시 로드
-      const newSession = await getSession() // 새 세션 가져오기
+      const newSession = await getSession()
       if (newSession?.user?.role === "SELLER") {
-        router.push("/seller/mypage") // 판매자로 전환되었을 때 판매자 마이페이지로 리다이렉션
+        router.push("/seller/mypage")
       } else {
-        router.push("/users/mypage") // 사용자가 될 경우 사용자 마이페이지로 리다이렉션
+        router.push("/users/mypage")
       }
     } catch (error) {
       console.error("역할 전환 중 오류 발생:", error)
@@ -41,12 +41,10 @@ export default function UserMyPage() {
     }
   }
 
-  // 로딩 상태 처리
   if (status === "loading") {
     return <p>로딩 중...</p>
   }
 
-  // 인증되지 않은 경우 로그인 페이지로 리다이렉트
   if (status === "unauthenticated") {
     return (
       <div>
@@ -56,7 +54,6 @@ export default function UserMyPage() {
     )
   }
 
-  // 사용자 마이페이지 UI
   return (
     <div className="mt-10 max-w-5xl mx-auto px-4">
       <h1 className="text-3xl font-semibold">계정</h1>
@@ -111,21 +108,23 @@ export default function UserMyPage() {
         </Link>
       </div>
 
-      {/* 역할 전환 버튼 표시 */}
-      <div className="mt-8">
-        <button
-          type="button"
-          onClick={handleSwitchRole}
-          className="bg-blue-600 text-white py-2 px-4 rounded"
-          disabled={loading}
-        >
-          {loading
-            ? "전환 중..."
-            : session?.user?.role === "SELLER"
-              ? "사용자로 전환"
-              : "판매자로 전환"}
-        </button>
-      </div>
+      {/* roleState에 따라 버튼 렌더링 */}
+      {currentRole !== "USER" && (
+        <div className="mt-8">
+          <button
+            type="button"
+            onClick={handleSwitchRole}
+            className="bg-blue-600 text-white py-2 px-4 rounded"
+            disabled={loading}
+          >
+            {loading
+              ? "전환 중..."
+              : currentRole === "SELLER"
+                ? "사용자로 전환"
+                : "판매자로 전환"}
+          </button>
+        </div>
+      )}
     </div>
   )
 }

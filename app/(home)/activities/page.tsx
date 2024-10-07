@@ -115,38 +115,43 @@ export default function ActivityPage() {
             이달의 활동 데이터를 불러오는 중 오류가 발생했습니다.
           </div>
         ) : (
-          // 이달의 활동 리스트를 보여주는 코드 (여기서 활동 이미지와 버튼을 보여줌)
-          topBookedActivities?.data?.map((activity: ActivityType) => (
-            <div
-              key={activity.id}
-              className="flex flex-col items-center justify-center p-4 bg-white shadow-lg rounded-lg"
-            >
-              {/* 이미지 */}
-              <img
-                src={activity.images[0] || "/default-image.jpg"} // 첫 번째 이미지를 사용하거나 기본 이미지 사용
-                alt={activity.title}
-                className="w-64 h-48 object-cover mx-auto rounded-lg"
-              />
+          // "react-slick"을 사용하여 슬라이더 기능 추가
+          <Slider
+            {...sliderSettings}
+            className="mx-auto w-full overflow-hidden"
+          >
+            {topBookedActivities?.data?.map((activity: ActivityType) => (
+              <div
+                key={activity.id}
+                className="flex flex-col items-center justify-center p-4 bg-white shadow-lg rounded-lg"
+              >
+                {/* 이미지 */}
+                <img
+                  src={activity.images[0] || "/default-image.jpg"} // 첫 번째 이미지를 사용하거나 기본 이미지 사용
+                  alt={activity.title}
+                  className="w-64 h-48 object-cover mx-auto rounded-lg"
+                />
 
-              {/* 활동명 및 예약 횟수 */}
-              <h3 className="text-lg mt-3 font-semibold text-center">
-                {activity.title}
-              </h3>
-              <p className="text-gray-500 text-center mt-1">
-                예약 횟수: {activity.bookings?.length ?? 0}
-              </p>
+                {/* 활동명 및 예약 횟수 */}
+                <h3 className="text-lg mt-3 font-semibold text-center">
+                  {activity.title}
+                </h3>
+                <p className="text-gray-500 text-center mt-1">
+                  예약 횟수: {activity.bookings?.length ?? 0}
+                </p>
 
-              {/* 자세히 보기 버튼 */}
-              <div className="flex justify-center w-full">
-                <button
-                  onClick={() => router.push(`/activities/${activity.id}`)}
-                  className="mt-2 px-4 py-2 bg-lime-500 text-white text-sm rounded hover:bg-lime-600 transition"
-                >
-                  자세히 보기
-                </button>
+                {/* 자세히 보기 버튼 */}
+                <div className="flex justify-center w-full">
+                  <button
+                    onClick={() => router.push(`/activities/${activity.id}`)}
+                    className="mt-2 px-4 py-2 bg-lime-500 text-white text-sm rounded hover:bg-lime-600 transition"
+                  >
+                    자세히 보기
+                  </button>
+                </div>
               </div>
-            </div>
-          ))
+            ))}
+          </Slider>
         )}
       </section>
 

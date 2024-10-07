@@ -7,39 +7,31 @@ import { FcGoogle } from "react-icons/fc"
 import { SiNaver } from "react-icons/si"
 import { RiKakaoTalkFill } from "react-icons/ri"
 import toast from "react-hot-toast"
+import { useSetRecoilState } from "recoil" // Recoil 상태 설정을 위해 추가
+import { roleState } from "@/atom" // roleState import
 
 export default function SignInPage() {
   const router = useRouter()
   const { status, data: session } = useSession()
   const [isSeller, setIsSeller] = useState(false)
+  const setRole = useSetRecoilState(roleState) // Recoil의 roleState 설정
 
   useEffect(() => {
     if (status === "authenticated") {
-      console.log("현재 세션:", session) // 세션 로그 추가
-      if (session.user.role === "SELLER") {
+      // 로그인한 후 역할 설정
+      setRole(session?.user?.role || "USER") // 세션에서 역할을 가져와 roleState에 설정
+      if (session?.user?.role === "SELLER") {
         router.push("/seller/mypage")
       } else {
         router.push("/users/mypage")
       }
-    } else if (status === "unauthenticated") {
-      return
-    } else if (status === "loading") {
-      return
     }
-  }, [status, session, router])
-
-  useEffect(() => {
-    if (status === "authenticated") {
-      toast.error("접근할 수 없습니다.")
-      router.replace("/")
-    }
-  }, [status, router])
+  }, [status, session, router, setRole])
 
   const handleClick = async (provider: string) => {
     try {
       await signIn(provider, { callbackUrl: `/?isSeller=${isSeller}` })
     } catch (e) {
-      console.log(e)
       toast.error("다시 시도해주세요")
     }
   }
@@ -59,19 +51,22 @@ export default function SignInPage() {
         SNS 계정을 이용해서 로그인 또는 회원가입을 해주세요.
       </div>
 
-      {/* 사용자와 판매자 토글 */}
       <div className="flex justify-center gap-4 mt-8">
         <button
           type="button"
           onClick={() => setIsSeller(false)}
-          className={`px-4 py-2 rounded-md ${!isSeller ? "bg-gray-300" : "bg-gray-100"}`}
+          className={`px-4 py-2 rounded-md ${
+            !isSeller ? "bg-gray-300" : "bg-gray-100"
+          }`}
         >
           사용자 로그인
         </button>
         <button
           type="button"
           onClick={() => setIsSeller(true)}
-          className={`px-4 py-2 rounded-md ${isSeller ? "bg-gray-300" : "bg-gray-100"}`}
+          className={`px-4 py-2 rounded-md ${
+            isSeller ? "bg-gray-300" : "bg-gray-100"
+          }`}
         >
           판매자 로그인
         </button>
