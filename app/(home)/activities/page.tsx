@@ -171,7 +171,6 @@ export default function ActivityPage() {
                   />
                 </div>
 
-                {/* 이미지 아래 텍스트 간격을 줄임 */}
                 <h3 className="text-lg mt-2 font-semibold text-center">
                   {activity.title}
                 </h3>
