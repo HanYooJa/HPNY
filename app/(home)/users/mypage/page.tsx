@@ -7,14 +7,21 @@ import Link from "next/link"
 import { AiOutlineUser, AiOutlineHeart, AiOutlineComment } from "react-icons/ai"
 import { BsBookmark } from "react-icons/bs"
 import axios from "axios"
-import { useRecoilValue } from "recoil"
+import { useRecoilState } from "recoil"
 import { roleState } from "@/atom" // roleState import
 
 export default function UserMyPage() {
   const { data: session, status } = useSession()
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const currentRole = useRecoilValue(roleState) // Recoil에서 roleState 값 가져오기
+  const [currentRole, setCurrentRole] = useRecoilState(roleState) // Recoil에서 roleState 값 가져오기
+
+  // 세션에서 역할 정보를 Recoil 상태로 업데이트
+  useEffect(() => {
+    if (session?.user?.role) {
+      setCurrentRole(session.user.role)
+    }
+  }, [session, setCurrentRole])
 
   const handleSwitchRole = async () => {
     setLoading(true)
@@ -22,9 +29,11 @@ export default function UserMyPage() {
       if (currentRole === "USER") {
         await axios.post("/api/upgrade-to-seller")
         alert("판매자로 전환되었습니다.")
+        setCurrentRole("SELLER") // Recoil 상태 업데이트
       } else {
         await axios.post("/api/switch-to-user")
         alert("사용자로 전환되었습니다.")
+        setCurrentRole("USER") // Recoil 상태 업데이트
       }
 
       const newSession = await getSession()
@@ -109,22 +118,20 @@ export default function UserMyPage() {
       </div>
 
       {/* roleState에 따라 버튼 렌더링 */}
-      {currentRole !== "USER" && (
-        <div className="mt-8">
-          <button
-            type="button"
-            onClick={handleSwitchRole}
-            className="bg-blue-600 text-white py-2 px-4 rounded"
-            disabled={loading}
-          >
-            {loading
-              ? "전환 중..."
-              : currentRole === "SELLER"
-                ? "사용자로 전환"
-                : "판매자로 전환"}
-          </button>
-        </div>
-      )}
+      <div className="mt-8">
+        <button
+          type="button"
+          onClick={handleSwitchRole}
+          className="bg-blue-600 text-white py-2 px-4 rounded"
+          disabled={loading}
+        >
+          {loading
+            ? "전환 중..."
+            : currentRole === "SELLER"
+              ? "사용자로 전환"
+              : "판매자로 전환"}
+        </button>
+      </div>
     </div>
   )
 }

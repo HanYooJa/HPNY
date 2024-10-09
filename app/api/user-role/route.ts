@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
-import { authOptions } from "../auth/[...nextauth]/route" // authOptions 경로를 확인하세요
+import { authOptions } from "@/pages/api/auth/[...nextauth]" // authOptions 경로를 확인하세요
 import prisma from "@/db"
 
 // 사용자 역할 조회 API 핸들러

@@ -11,49 +11,57 @@ export default function SwitchRoleButton({ isSeller }: { isSeller: boolean }) {
   const [loading, setLoading] = useState(false)
 
   const handleSwitchRole = async () => {
+    if (!session) {
+      alert("세션 정보가 없습니다. 다시 로그인해 주세요.")
+      setLoading(false)
+      return
+    }
+
     try {
       setLoading(true)
 
-      if (!session) {
-        alert("세션 정보가 없습니다. 다시 로그인해 주세요.")
-        return
-      }
-
       if (isSeller) {
+        // 판매자에서 사용자로 전환
         const response = await axios.post("/api/switch-to-user")
-        alert(response.data.message || "사용자 전환이 완료되었습니다.")
-        await update()
-        router.push("/users/mypage")
+        if (response.status === 200) {
+          alert(response.data.message || "사용자 전환이 완료되었습니다.")
+          await update() // 세션 업데이트 후에 페이지 이동
+          router.push("/users/mypage")
+        } else {
+          alert(response.data.error || "사용자 전환에 실패했습니다.")
+        }
       } else {
+        // 사용자에서 판매자로 전환
         const response = await axios.post("/api/upgrade-to-seller", {
           userId: session.user.id,
         })
 
         if (response.status === 200) {
           alert(response.data.message || "판매자 전환이 완료되었습니다.")
-          await update()
+          await update() // 세션 업데이트 후에 페이지 이동
           router.push("/seller/mypage")
         } else {
           alert(response.data.error || "판매자 전환에 실패했습니다.")
         }
       }
     } catch (error: any) {
-      alert("전환 중 문제가 발생했습니다.")
+      alert("전환 중 문제가 발생했습니다. 다시 시도해 주세요.")
     } finally {
       setLoading(false)
     }
   }
 
-  // role이 USER일 때 버튼 숨기기
-  if (session?.user?.role === "USER") {
+  // role이 SELLER인 경우, 판매자 전환 버튼 숨기기
+  if (session?.user?.role === "SELLER" && isSeller) {
     return null
   }
 
+  // 판매자로 전환하기 버튼 렌더링
   return (
     <button
       onClick={handleSwitchRole}
       disabled={loading}
-      className={`mt-4 p-3 bg-blue-600 text-white rounded`}
+      className={`mt-4 p-3 bg-blue-600 text-white rounded ${loading ? "opacity-50" : ""}`}
     >
       {loading
         ? "처리 중..."

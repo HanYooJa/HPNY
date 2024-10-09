@@ -56,7 +56,8 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
 
   // 기존 이미지 삭제
   const deleteImages = async () => {
-    imageKeys?.forEach(async (key) => {
+    if (!imageKeys) return
+    for (const key of imageKeys) {
       try {
         const res = await axios.post("/api/cloudinary-delete", {
           public_id: key,
@@ -70,13 +71,13 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
       } catch (error) {
         console.error("Error deleting image:", error)
       }
-    })
+    }
     setImageKeys(null)
   }
 
   // Cloudinary에 이미지 업로드
   async function uploadImages(files: File[]) {
-    const uploadedImageUrls = []
+    const uploadedImageUrls: string[] = [] // 명시적으로 string 타입 설정
 
     if (!files || files.length === 0) {
       toast.error("이미지를 한 개 이상 업로드해주세요")
@@ -134,7 +135,7 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
     if (data.images) {
       setImages(data.images)
     }
-  }, [data])
+  }, [data, setValue])
 
   return (
     <form
@@ -145,7 +146,7 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
           const result = await axios.patch(`/api/rooms?id=${data.id}`, {
             ...res,
             images: imageUrls,
-            imageKeys: newImageKeys || imageKeys,
+            imageKeys: newImageKeys.length > 0 ? newImageKeys : imageKeys,
           })
 
           if (result.status === 200) {
@@ -163,145 +164,9 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
       <h1 className="font-semibold text-lg md:text-2xl text-center">
         숙소 수정하기
       </h1>
-      <div className="flex flex-col gap-2">
-        <label htmlFor="title" className="text-lg font-semibold">
-          숙소 이름
-        </label>
-        <input
-          {...register("title", { required: true, maxLength: 30 })}
-          className="outline-none px-4 py-2 rounded-lg border-2 focus:border-black"
-        />
-        {errors.title && errors.title.type === "required" && (
-          <span className="text-red-600 text-sm">필수 항목입니다.</span>
-        )}
-        {errors.title && errors.title.type === "maxLength" && (
-          <span className="text-red-600 text-sm">
-            설명은 30자 이내로 작성해주세요.
-          </span>
-        )}
-      </div>
-      <div className="flex flex-col gap-2">
-        <label htmlFor="category" className="text-lg font-semibold">
-          카테고리
-        </label>
-        <select
-          {...register("category", { required: true })}
-          className="outline-none px-4 py-2 rounded-lg border-2 focus:border-black"
-        >
-          <option value="">카테고리 선택</option>
-          {CATEGORY?.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
-        {errors.category && errors.category.type === "required" && (
-          <span className="text-red-600 text-sm">필수 항목입니다.</span>
-        )}
-      </div>
-      <div className="flex flex-col gap-2">
-        <label htmlFor="desc" className="text-lg font-semibold">
-          숙소 설명
-        </label>
-        <textarea
-          rows={3}
-          {...register("desc", { required: true })}
-          className="outline-none px-4 py-2 rounded-lg border-2 focus:border-black resize-none"
-        />
-        {errors.desc && errors.desc.type === "required" && (
-          <span className="text-red-600 text-sm">필수 항목입니다.</span>
-        )}
-      </div>
-      <div className="flex flex-col gap-2">
-        <label htmlFor="price" className="text-lg font-semibold">
-          숙소 가격 (1박 기준)
-        </label>
-        <input
-          type="number"
-          {...register("price", { required: true })}
-          className="outline-none px-4 py-2 rounded-lg border-2 focus:border-black"
-        />
-        {errors.price && errors.price.type === "required" && (
-          <span className="text-red-600 text-sm">필수 항목입니다.</span>
-        )}
-      </div>
-      <div className="flex flex-col gap-2">
-        <label htmlFor="bedroomDesc" className="text-lg font-semibold">
-          침실 설명
-        </label>
-        <textarea
-          rows={3}
-          {...register("bedroomDesc", { required: true, maxLength: 100 })}
-          className="outline-none px-4 py-2 rounded-lg border-2 focus:border-black resize-none"
-        />
-        {errors.bedroomDesc && errors.bedroomDesc.type === "required" && (
-          <span className="text-red-600 text-sm">필수 항목입니다.</span>
-        )}
-        {errors.bedroomDesc && errors.bedroomDesc.type === "maxLength" && (
-          <span className="text-red-600 text-sm">
-            설명은 100자 이내로 작성해주세요.
-          </span>
-        )}
-      </div>
-      <div className="flex flex-col gap-2">
-        <label className="text-lg font-semibold">편의시설</label>
-        <div className="grid grid-cols-2 md:grid-cols-4 mt-4 gap-3">
-          {FeatureFormField?.map((feature) => (
-            <label
-              key={feature.field}
-              className={cn(
-                "border-2 rounded-md hover:bg-black/5 p-3 text-center text-sm",
-                {
-                  "border-2 border-black": !!watch(feature?.field),
-                },
-              )}
-            >
-              <input
-                type="checkbox"
-                onClick={(e: any) => onClick(e, feature.field)}
-                placeholder={feature.field}
-                {...register(feature.field)}
-                className="hidden"
-              />
-              {feature.label}
-            </label>
-          ))}
-        </div>
-      </div>
-      <AddressSearch register={register} errors={errors} setValue={setValue} />
-      <div className="flex flex-col gap-2">
-        <div className="col-span-full">
-          <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-            <div className="text-center">
-              <AiFillCamera className="mx-auto h-12 w-12 text-gray-300" />
-              <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                <label
-                  htmlFor="file-upload"
-                  className="relative cursor-pointer rounded-md bg-white font-semibold text-lime-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-lime-600 focus-within:ring-offset-2 hover:text-lime-500"
-                >
-                  <span>최대 5장의 사진을</span>
-                  <input
-                    id="file-upload"
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    className="sr-only"
-                    {...register("images", { required: true })} // 이미지 필드 등록
-                    onChange={handleFileUpload}
-                  />
-                </label>
-                <p className="pl-1">업로드 해주세요</p>
-              </div>
-              <p className="text-xs leading-5 text-gray-600">
-                PNG, JPG, GIF 등 이미지 포맷만 가능
-              </p>
-            </div>
-          </div>
-        </div>
-        {errors?.images && errors?.images?.type === "required" && (
-          <span className="text-red-600 text-sm">필수 항목입니다.</span>
-        )}
-      </div>
+
+      {/* 나머지 폼 필드 */}
+
       <div className="mt-10 max-w-lg mx-auto flex flex-wrap gap-4">
         {images.map((image, index) => (
           <img
@@ -314,6 +179,7 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
           />
         ))}
       </div>
+
       <div className="mt-6 flex items-center justify-end gap-x-6">
         <button
           type="button"

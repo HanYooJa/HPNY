@@ -1,6 +1,6 @@
 "use client"
 
-import { useSession, signIn, getSession } from "next-auth/react"
+import { useSession, getSession } from "next-auth/react"
 import Link from "next/link"
 import { BsHouseAdd, BsHouseCheck, BsBookmark } from "react-icons/bs"
 import { MdOutlineSportsEsports, MdSportsEsports } from "react-icons/md"
@@ -9,25 +9,46 @@ import React, { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 
 export default function SellerMyPage() {
-  const { data: session, status, update } = useSession() // 세션 업데이트 기능 추가
+  // 최상단에서 훅 호출
+  const { data: session, status, update } = useSession()
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
+  // 세션 동기화 훅 (항상 호출되도록)
   useEffect(() => {
-    const checkRoleAndRedirect = async () => {
-      if (status === "loading") return // 로딩 중일 때는 아무 것도 하지 않음
-
-      const sessionData = await getSession()
-      console.log("Updated session:", sessionData)
-
-      if (sessionData?.user?.role !== "SELLER") {
-        router.push("/users/mypage") // SELLER가 아닐 경우 사용자 마이페이지로 리디렉션
+    const syncSession = async () => {
+      if (status === "authenticated") {
+        const sessionData = await getSession()
+        if (sessionData?.user?.role !== session?.user?.role) {
+          await update() // 세션 동기화
+        }
       }
     }
 
-    checkRoleAndRedirect()
+    if (status === "authenticated") {
+      syncSession() // 조건부 호출은 useEffect 내부에서만 처리
+    }
+  }, [session, status, update])
+
+  // 페이지 로드 시 사용자의 역할 확인 및 리디렉션
+  useEffect(() => {
+    const checkRoleAndRedirect = async () => {
+      if (status === "authenticated") {
+        const sessionData = await getSession()
+        console.log("Updated session:", sessionData)
+
+        if (sessionData?.user?.role !== "SELLER") {
+          router.push("/users/mypage") // SELLER가 아닐 경우 사용자 마이페이지로 리디렉션
+        }
+      }
+    }
+
+    if (status === "authenticated") {
+      checkRoleAndRedirect() // 조건부 호출은 useEffect 내부에서만 처리
+    }
   }, [status, router])
 
+  // 역할 전환 버튼 핸들러
   const handleSwitchRole = async () => {
     setLoading(true)
     try {
@@ -40,7 +61,7 @@ export default function SellerMyPage() {
       }
 
       // 세션을 다시 가져와서 업데이트
-      await update() // 세션을 업데이트하여 변경된 역할을 반영
+      await update()
       const newSession = await getSession() // 새로운 세션 확인
       console.log("Updated session after role switch:", newSession)
 
@@ -58,10 +79,12 @@ export default function SellerMyPage() {
     }
   }
 
+  // 세션이 로딩 중일 때 표시할 내용
   if (status === "loading") {
     return <p>로딩 중...</p>
   }
 
+  // 세션이 없는 경우 로그인 페이지로 유도
   if (status === "unauthenticated") {
     return (
       <div>
@@ -82,6 +105,7 @@ export default function SellerMyPage() {
         </div>
       </div>
 
+      {/* 판매자 관련 메뉴 */}
       <div className="grid md:grid-cols-3 gap-4 mt-12 mb-20">
         <Link
           href="/rooms/register/category"
@@ -137,6 +161,7 @@ export default function SellerMyPage() {
         </Link>
       </div>
 
+      {/* 역할 전환 버튼 */}
       <div className="mt-8">
         <button
           type="button"

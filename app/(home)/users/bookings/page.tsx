@@ -1,15 +1,15 @@
-'use client'
+"use client"
 
-import { Loader } from '@/components/Loader'
-import { BookingType } from '@/interface'
-import axios from 'axios'
-import dayjs from 'dayjs'
-import { useSession } from 'next-auth/react'
-import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-import React from 'react'
-import { BiChevronRight } from 'react-icons/bi'
-import { useInfiniteQuery } from 'react-query'
+import { Loader } from "@/components/Loader"
+import { BookingType } from "@/interface"
+import axios from "axios"
+import dayjs from "dayjs"
+import { useSession } from "next-auth/react"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import React from "react"
+import { BiChevronRight } from "react-icons/bi"
+import { useInfiniteQuery } from "react-query"
 
 export default function BookingsPage() {
   const { data: session } = useSession()
@@ -31,6 +31,8 @@ export default function BookingsPage() {
     data: bookings,
     fetchNextPage,
     isLoading,
+    isFetchingNextPage, // 추가 데이터 로딩 상태
+    isError, // 에러 상태 추가
     hasNextPage,
   } = useInfiniteQuery(`bookings-user-${session?.user?.id}`, fetchBookings, {
     getNextPageParam: (lastPage) =>
@@ -42,8 +44,16 @@ export default function BookingsPage() {
     <div className="max-w-7xl mx-auto px-4">
       <h1 className="font-semibold text-lg md:text-2xl">나의 예약 리스트</h1>
       <p className="mt-2 text-gray-500">나의 예약 일정을 확인해보세요.</p>
+
+      {/* 로딩 상태 처리 */}
       {isLoading ? (
         <Loader className="mt-10 mb-20" />
+      ) : isError ? (
+        <p className="mt-10 mb-20 text-red-500">
+          예약 내역을 불러오는 중 오류가 발생했습니다.
+        </p>
+      ) : bookings?.pages?.length === 0 ? (
+        <p className="mt-10 mb-20">예약 내역이 없습니다.</p>
       ) : (
         <div className="mb-20 mt-10 flex flex-col">
           {bookings?.pages?.map((page, index) => (
@@ -54,15 +64,15 @@ export default function BookingsPage() {
                   className="flex flex-col gap-6 border-b pb-8 hover:bg-black/5 cursor-pointer p-6"
                 >
                   <h1 className="font-semibold text-lg md:text-xl">
-                    {booking?.status === 'SUCCESS'
-                      ? '예약된 여행'
-                      : '취소된 여행'}
+                    {booking?.status === "SUCCESS"
+                      ? "예약된 여행"
+                      : "취소된 여행"}
                   </h1>
                   <div className="flex gap-4 items-center w-full justify-between">
                     <div className="flex items-center gap-4">
                       <Image
                         className="rounded-md"
-                        src={booking?.room?.images?.[0] || '/images/logo.png'}
+                        src={booking?.room?.images?.[0] || "/images/logo.png"}
                         width={80}
                         height={80}
                         alt="숙소 이미지"
@@ -75,10 +85,10 @@ export default function BookingsPage() {
                           {booking?.room?.address}
                         </p>
                         <p className="mt-1 text-xs text-gray-500">
-                          {dayjs(booking?.checkIn)?.format('YYYY년 MM월 DD일')}{' '}
-                          -{' '}
-                          {dayjs(booking?.checkOut)?.format('YYYY년 MM월 DD일')}{' '}
-                          | {booking?.guestCount}명 |{' '}
+                          {dayjs(booking?.checkIn)?.format("YYYY년 MM월 DD일")}{" "}
+                          -{" "}
+                          {dayjs(booking?.checkOut)?.format("YYYY년 MM월 DD일")}{" "}
+                          | {booking?.guestCount}명 |{" "}
                           {booking?.totalAmount?.toLocaleString()}원
                         </p>
                       </div>
@@ -101,6 +111,7 @@ export default function BookingsPage() {
                         router.push(`/users/bookings/${booking?.id}`)
                       }}
                       className="text-white bg-lime-600 hover:bg-lime-500 px-4 py-2.5 rounded-md"
+                      disabled={booking?.status !== "SUCCESS"} // 취소된 여행은 버튼 비활성화
                     >
                       예약내역 확인
                     </button>
@@ -109,6 +120,7 @@ export default function BookingsPage() {
               ))}
             </React.Fragment>
           ))}
+          {/* 다음 페이지 로드 시 로딩 표시 추가 */}
           {hasNextPage && (
             <div className="flex flex-col items-center">
               <button
@@ -116,7 +128,7 @@ export default function BookingsPage() {
                 onClick={() => fetchNextPage()}
                 className="mt-8 bg-black px-5 py-3.5 shadow-sm hover:shadow-xl rounded-full text-white"
               >
-                예약내역 더 불러오기
+                {isFetchingNextPage ? "로딩 중..." : "예약내역 더 불러오기"}
               </button>
             </div>
           )}

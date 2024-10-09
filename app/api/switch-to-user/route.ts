@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route" // auth 경로 확인
+import { authOptions } from "@/pages/api/auth/[...nextauth]" // auth 경로 확인
 import prisma from "@/db" // Prisma 클라이언트 파일 경로 확인
 
 export async function POST(req: Request) {

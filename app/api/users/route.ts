@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { authOptions } from "@/pages/api/auth/[...nextauth]"
 import prisma from "@/db"
 
 // 사용자 정보 가져오기

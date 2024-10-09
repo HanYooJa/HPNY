@@ -1,7 +1,7 @@
 // app/api/seller/bookings/route.ts
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
-import { authOptions } from "../../auth/[...nextauth]/route"
+import { authOptions } from "@/pages/api/auth/[...nextauth]"
 import prisma from "@/db" // 본인의 Prisma 클라이언트 파일 경로를 확인하세요
 
 // GET 요청: 판매자의 숙소 예약 내역을 가져옴
