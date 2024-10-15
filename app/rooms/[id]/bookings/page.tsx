@@ -93,7 +93,6 @@ export default function BookingPage({
               </div>
             </div>
 
-            {/* 요금 정보 */}
             <h2 className="text-lg md:text-2xl font-semibold">
               요금 세부 정보
             </h2>

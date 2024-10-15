@@ -12,7 +12,7 @@ import { BiChevronRight } from "react-icons/bi"
 import { useInfiniteQuery } from "react-query"
 
 export default function SellerBookingsPage() {
-  const { data: session } = useSession() // 세션 정보 가져오기
+  const { data: session } = useSession()
   const router = useRouter()
 
   // 예약 내역을 가져오는 함수
@@ -26,7 +26,7 @@ export default function SellerBookingsPage() {
         `/api/seller/bookings?page=${pageParam}`,
         {
           headers: {
-            Authorization: `Bearer ${session.accessToken}`, // accessToken 포함
+            Authorization: `Bearer ${session.accessToken}`,
           },
           params: {
             limit: 5, // 한 페이지당 5개의 예약 가져오기
@@ -116,7 +116,7 @@ export default function SellerBookingsPage() {
                     <button
                       type="button"
                       onClick={() => {
-                        router.push(`/seller/bookings/${booking?.id}`) // 여기서 경로를 수정
+                        router.push(`/seller/bookings/${booking?.id}`)
                       }}
                       className="text-white bg-lime-600 hover:bg-lime-500 px-4 py-2.5 rounded-md"
                     >

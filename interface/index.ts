@@ -1,6 +1,5 @@
 import { ReactNode } from "react"
 
-// DetailFilterType과 FilterProps 인터페이스 정의
 export type DetailFilterType = "location" | "checkIn" | "checkOut" | "guest"
 export interface FilterProps {
   location: string
@@ -10,7 +9,7 @@ export interface FilterProps {
   category: string
   startDate?: string
   endDate?: string
-  role?: "USER" | "SELLER" // 역할 필터 추가
+  role?: "USER" | "SELLER"
 }
 
 // 필터 관련 인터페이스 정의
@@ -26,26 +25,25 @@ export interface FilterLayoutProps {
   isShow: boolean
 }
 
-// LikeType과 CommentType 인터페이스 정의
 export interface LikeType {
   id: number
   roomId?: number
-  activityId?: number // 활동 ID 추가
+  activityId?: number
   userId: number
   createdAt: string
   room?: RoomType
-  activity?: ActivityType // 활동과의 관계 추가
+  activity?: ActivityType
 }
 
 export interface CommentType {
   id: number
   createdAt: string
   roomId?: number
-  activityId?: number // 활동 ID 추가
+  activityId?: number
   userId: string
   body: string
   room?: RoomType
-  activity?: ActivityType // 활동과의 관계 추가
+  activity?: ActivityType
   user: UserType
 }
 
@@ -56,12 +54,11 @@ export interface CommentApiType {
   totalPage?: number
 }
 
-// RoomType 인터페이스 정의
 export interface RoomType {
   id: number
-  activityId?: number // 선택적 속성으로 변경
-  images: string[] // 여러 이미지를 저장하는 배열
-  imageUrl?: string // 대표 이미지 URL 속성 추가
+  activityId?: number
+  images: string[]
+  imageUrl?: string
   imageKeys?: string[]
   title: string
   name?: string
@@ -85,7 +82,7 @@ export interface RoomType {
   hasBarbeque: boolean
   hasFreeParking: boolean
   likes?: LikeType[]
-  comments?: CommentType[] // 댓글 추가
+  comments?: CommentType[]
   bookings?: BookingType[]
   createdAt?: string
   updatedAt?: string
@@ -93,14 +90,12 @@ export interface RoomType {
   views?: number
 }
 
-// Account 인터페이스 정의
 interface Account {
   id: string
   provider: string
   providerAccountId?: string
 }
 
-// UserType 인터페이스 정의
 export interface UserType {
   id: number
   email: string
@@ -108,16 +103,15 @@ export interface UserType {
   image: string
   desc?: string
   rooms?: RoomType[]
-  activities?: ActivityType[] // 활동 추가
+  activities?: ActivityType[]
   accounts: Account[]
   address?: string
   phone?: string
-  comments?: CommentType[] // 댓글 추가 (Comment -> CommentType 수정)
+  comments?: CommentType[]
   bookings?: BookingType[]
   role?: "USER" | "SELLER"
 }
 
-// FaqType, LocationType 인터페이스 정의
 export interface FaqType {
   id: number
   title: string
@@ -130,7 +124,6 @@ export interface LocationType {
   zoom?: number
 }
 
-// ParamsProps와 BookingParamsProps 인터페이스 정의
 export interface ParamsProps {
   params: { id: string }
 }
@@ -146,20 +139,19 @@ export interface BookingParamsProps {
   }
 }
 
-// BookingType 인터페이스 정의
 export interface BookingType {
   id: number
   roomId?: number
-  activityId?: number // 활동 예약 추가
+  activityId?: number
   userId: string
   checkIn: string
   checkOut: string
   guestCount: number
   totalAmount: number
   totalDays: number
-  status: "SUCCESS" | "PENDING" | "CANCEL" // 명확한 상태 타입 정의
-  room?: RoomType // 숙소 정보
-  activity?: ActivityType // 활동 정보 추가
+  status: "SUCCESS" | "PENDING" | "CANCEL"
+  room?: RoomType
+  activity?: ActivityType
   user: UserType
   createdAt: string
   updatedAt: string
@@ -167,7 +159,6 @@ export interface BookingType {
   freeCancel?: boolean
 }
 
-// RoomFormType, SearchProps 인터페이스 정의
 export interface RoomFormType {
   images?: string[]
   imageKeys?: string[]
@@ -196,7 +187,6 @@ export interface SearchProps {
   q: string | null
 }
 
-// ActivityType 및 ActivityFormType 인터페이스 정의
 export interface ActivityType {
   id: number
   title: string
@@ -207,13 +197,13 @@ export interface ActivityType {
   lng?: number
   category: string
   desc?: string
-  description?: string // 추가된 description 속성
+  description?: string
   price: number
   userId: string
   createdAt: string
-  imageUrl?: string // 대표 이미지 URL 속성 추가
+  imageUrl?: string
   likes?: LikeType[]
-  comments?: CommentType[] // 댓글 추가
+  comments?: CommentType[]
   bookings?: BookingType[]
   user: UserType
   updatedAt: string

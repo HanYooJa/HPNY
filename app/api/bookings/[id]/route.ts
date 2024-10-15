@@ -3,7 +3,7 @@ import prisma from "@/db"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/pages/api/auth/[...nextauth]"
 
-// GET: 특정 예약 상세 조회
+// GET 방식으로 특정 예약 상세 조회
 export async function GET(
   req: Request,
   { params }: { params: { id: string } },
@@ -33,7 +33,7 @@ export async function GET(
             images: true,
             category: true,
             comments: true,
-            freeCancel: true, // 무료 취소 여부 추가
+            freeCancel: true,
           },
         },
         activity: {
@@ -76,7 +76,7 @@ export async function PATCH(
   const bookingId = parseInt(params.id)
   const { status } = await req.json()
 
-  // 상태가 유효한지 확인 (PENDING, SUCCESS, CANCEL 중 하나여야 함)
+  // 상태가 유효한지 확인 (PENDING, SUCCESS, CANCEL 중 하나)
   const validStatuses = ["PENDING", "SUCCESS", "CANCEL"]
   if (!validStatuses.includes(status)) {
     return NextResponse.json({ error: "Invalid status" }, { status: 400 })

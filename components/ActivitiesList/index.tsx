@@ -6,7 +6,6 @@ import Link from "next/link"
 import Image from "next/image"
 import { BLUR_DATA_URL } from "@/constants"
 
-// ActivityItemWithHoverSlider 컴포넌트 수정
 export function ActivityItemWithHoverSlider({
   activity,
 }: {
@@ -27,7 +26,7 @@ export function ActivityItemWithHoverSlider({
       clearInterval(intervalRef.current)
       intervalRef.current = null
     }
-    setCurrentImageIndex(0) // 마우스가 벗어나면 첫 번째 이미지로 돌아갑니다.
+    setCurrentImageIndex(0)
   }
   return (
     <div
@@ -60,7 +59,6 @@ export function ActivityItemWithHoverSlider({
     </div>
   )
 }
-// 기존 ActivityItem 컴포넌트
 
 export function ActivityItem({ activity }: { activity: ActivityType }) {
   return (
@@ -91,7 +89,6 @@ export function ActivityItem({ activity }: { activity: ActivityType }) {
   )
 }
 
-// GridLayout 컴포넌트
 export function GridLayout({ children }: { children: ReactNode }) {
   return (
     <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-20 sm:px-4 md:px-8 lg:px-16">

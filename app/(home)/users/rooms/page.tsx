@@ -54,23 +54,21 @@ export default function UserRooms() {
     },
   )
 
-  // Cloudinary로 이미지를 삭제하는 함수
   async function deleteImages(imageKeys: string[] | null) {
     if (imageKeys) {
       for (const key of imageKeys) {
         try {
-          // Cloudinary에서 이미지를 삭제하는 API 호출
           const res = await axios.post("/api/cloudinary-delete", {
-            public_id: key, // Cloudinary 이미지의 public_id 사용
+            public_id: key,
           })
 
           if (res.status === 200) {
-            console.log("File Deleted: ", key)
+            console.log("파일이 삭제되었습니다.: ", key)
           } else {
-            console.log("Cloudinary delete failed for: ", key)
+            console.log("Cloudinary 삭제 실패: ", key)
           }
         } catch (error) {
-          console.error("Error deleting image:", error)
+          console.error("이미지 삭제 실패:", error)
         }
       }
     }
@@ -82,7 +80,6 @@ export default function UserRooms() {
 
     if (confirm && data) {
       try {
-        // 먼저 Cloudinary에서 이미지 삭제
         await deleteImages(data.imageKeys || null)
         const result = await axios.delete(`/api/rooms?id=${data.id}`)
 

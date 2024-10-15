@@ -14,7 +14,7 @@ export default function ActivityBookingPage({
 }: {
   params: { id: string }
 }) {
-  const { data: session, status } = useSession() // 세션 정보
+  const { data: session, status } = useSession()
   const [booking, setBooking] = useState<BookingType | null>(null)
   const [activity, setActivity] = useState<ActivityType | null>(null)
   const [loading, setLoading] = useState(true)
@@ -135,7 +135,6 @@ export default function ActivityBookingPage({
           </div>
         </section>
 
-        {/* 결제 완료 시 취소 버튼만 남기기 */}
         <section className="flex justify-between items-center gap-4 mt-8">
           {booking?.status === "SUCCESS" && (
             <RefundButton booking={booking} canRefund={canRefund} />

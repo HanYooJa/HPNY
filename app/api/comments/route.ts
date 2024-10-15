@@ -14,7 +14,6 @@ export async function GET(req: Request) {
 
   const session = await getServerSession(authOptions)
 
-  // 댓글 총 개수 계산
   const count = await prisma.comment.count({
     where: {
       ...(my && session?.user?.id ? { userId: session.user.id } : {}), // 'my'가 true일 때만 본인 댓글 조회
@@ -23,7 +22,6 @@ export async function GET(req: Request) {
     },
   })
 
-  // 페이지네이션에 맞춰 댓글 데이터 가져오기
   const skipPage = (parseInt(page) - 1) * parseInt(limit)
   const comments = await prisma.comment.findMany({
     orderBy: { createdAt: "desc" },

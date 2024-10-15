@@ -8,25 +8,24 @@ import { CommentApiType } from "@/interface"
 export default function CommentSection({
   isLoading,
   comments,
-  roomId, // roomId는 필수로 변경
-  activityId, // activityId는 선택적
+  roomId,
+  activityId,
 }: {
   isLoading: boolean
   comments: CommentApiType | null
-  roomId: number // roomId 필수
-  activityId?: number // activityId는 선택적
+  roomId: number
+  activityId?: number
 }) {
-  const [commentBody, setCommentBody] = useState("") // 댓글 입력 상태
-  const [isSubmitting, setIsSubmitting] = useState(false) // 제출 상태
+  const [commentBody, setCommentBody] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [updatedComments, setUpdatedComments] = useState<CommentApiType | null>(
     comments,
-  ) // 업데이트된 댓글 상태
-  const [loadingComments, setLoadingComments] = useState(isLoading) // 댓글 로딩 상태
+  )
+  const [loadingComments, setLoadingComments] = useState(isLoading)
 
-  // 페이지가 처음 로드될 때 전체 댓글 목록을 가져오기
   useEffect(() => {
     const fetchComments = async () => {
-      setLoadingComments(true) // 로딩 시작
+      setLoadingComments(true)
       try {
         let fetchUrl = ""
 
@@ -46,15 +45,14 @@ export default function CommentSection({
 
         const initialComments = await res.json()
 
-        // totalCount를 포함하여 상태를 업데이트
         setUpdatedComments({
           ...initialComments,
-          totalCount: initialComments.totalCount, // totalCount 값이 올바르게 전달되도록 확인
+          totalCount: initialComments.totalCount,
         })
       } catch (error) {
         console.error("댓글 가져오기 오류:", error)
       } finally {
-        setLoadingComments(false) // 로딩 종료
+        setLoadingComments(false)
       }
     }
 
@@ -72,17 +70,16 @@ export default function CommentSection({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          roomId, // roomId 사용
-          activityId, // activityId가 있는 경우만 사용
+          roomId,
+          activityId,
           body: commentBody,
         }),
       })
 
       if (response.ok) {
         const newComment = await response.json()
-        setCommentBody("") // 입력 필드 초기화
+        setCommentBody("")
 
-        // 댓글 작성 후 전체 댓글 목록을 다시 가져오기
         let fetchUrl = ""
         if (roomId) {
           fetchUrl = `/api/comments?roomId=${roomId}`
@@ -97,10 +94,9 @@ export default function CommentSection({
 
         const updatedCommentsList = await res.json()
 
-        // totalCount도 함께 업데이트
         setUpdatedComments({
           ...updatedCommentsList,
-          totalCount: updatedCommentsList.totalCount, // totalCount가 정확히 반영되는지 확인
+          totalCount: updatedCommentsList.totalCount,
         })
       } else {
         console.error("댓글 작성 실패")
@@ -115,7 +111,7 @@ export default function CommentSection({
   return (
     <div className="mt-8">
       <h1 className="font-semibold text-xl mb-2">
-        후기 {updatedComments?.totalCount || 0}개 {/* 총 댓글 개수 표시 */}
+        후기 {updatedComments?.totalCount || 0}개
       </h1>
       <form onSubmit={handleCommentSubmit} className="flex gap-4 mb-4">
         <textarea
@@ -143,8 +139,8 @@ export default function CommentSection({
           <CommentList
             isLoading={false}
             comments={updatedComments}
-            roomId={roomId} // roomId 전달
-            activityId={activityId} // activityId가 있는 경우 전달
+            roomId={roomId}
+            activityId={activityId}
           />
         )
       )}

@@ -83,7 +83,7 @@ export async function GET(req: Request) {
         take: parseInt(limit),
         skip: skipPage * parseInt(limit),
         include: {
-          bookings: true, // 예약 관련 데이터 포함
+          bookings: true,
           comments: true,
           likes: true,
         },
@@ -161,7 +161,6 @@ export async function POST(req: Request) {
   }
 }
 
-// DELETE 요청 핸들러 추가
 export async function DELETE(req: Request) {
   const { searchParams } = new URL(req.url)
   const id = searchParams.get("id") as string

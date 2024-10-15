@@ -1,5 +1,3 @@
-// pages/api/auth/[...nextauth].ts
-
 import NextAuth, { NextAuthOptions } from "next-auth"
 import prisma from "@/db"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
@@ -7,10 +5,9 @@ import GoogleProvider from "next-auth/providers/google"
 import NaverProvider from "next-auth/providers/naver"
 import KakaoProvider from "next-auth/providers/kakao"
 
-// NextAuth 설정
 export const authOptions: NextAuthOptions = {
   session: {
-    strategy: "jwt", // 명시적으로 "jwt"로 지정
+    strategy: "jwt",
     maxAge: 60 * 60 * 24, // 24시간 세션 유지
     updateAge: 60 * 60 * 2, // 2시간마다 세션 갱신
   },
@@ -72,5 +69,4 @@ export const authOptions: NextAuthOptions = {
   },
 }
 
-// Next.js의 NextAuth를 위한 라우팅 핸들러 생성
 export default NextAuth(authOptions)

@@ -1,4 +1,3 @@
-// components/ActivityDetail/LikeButton.tsx
 "use client"
 
 import { ActivityType } from "@/interface"

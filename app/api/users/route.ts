@@ -18,7 +18,7 @@ export async function GET(req: Request) {
         id: session.user.id,
       },
       include: {
-        accounts: true, // 관련된 계정 정보 포함
+        accounts: true,
       },
     })
 
@@ -35,7 +35,7 @@ export async function GET(req: Request) {
 
 // 사용자 정보 업데이트
 export async function PUT(req: Request) {
-  const formData = await req.json() // 요청 본문에서 JSON 데이터 가져오기
+  const formData = await req.json()
   const session = await getServerSession(authOptions)
 
   // 세션이 없으면 401 상태 반환
@@ -48,7 +48,7 @@ export async function PUT(req: Request) {
       where: {
         id: session.user.id,
       },
-      data: { ...formData }, // 요청 본문 데이터로 사용자 정보 업데이트
+      data: { ...formData },
     })
 
     // 업데이트된 사용자 데이터 반환

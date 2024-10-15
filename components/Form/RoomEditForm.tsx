@@ -17,8 +17,8 @@ import cn from "classnames"
 export default function RoomEditForm({ data }: { data: RoomType }) {
   const router = useRouter()
   const { data: session } = useSession()
-  const [images, setImages] = useState<string[]>([]) // 이미지 미리보기 URL
-  const [imageFiles, setImageFiles] = useState<File[]>([]) // 파일 객체
+  const [images, setImages] = useState<string[]>([])
+  const [imageFiles, setImageFiles] = useState<File[]>([])
   const [imageKeys, setImageKeys] = useState<string[] | null>(null)
   let newImageKeys: string[] = []
 
@@ -35,8 +35,8 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
       newFiles.push(file)
     })
 
-    setImages((prev) => [...prev, ...newImageUrls]) // 기존 이미지 유지 + 새 이미지 추가
-    setImageFiles((prev) => [...prev, ...newFiles]) // 파일 객체 저장
+    setImages((prev) => [...prev, ...newImageUrls])
+    setImageFiles((prev) => [...prev, ...newFiles])
   }
 
   const {
@@ -54,7 +54,6 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
     setValue(title, event?.target?.checked)
   }
 
-  // 기존 이미지 삭제
   const deleteImages = async () => {
     if (!imageKeys) return
     for (const key of imageKeys) {
@@ -77,7 +76,7 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
 
   // Cloudinary에 이미지 업로드
   async function uploadImages(files: File[]) {
-    const uploadedImageUrls: string[] = [] // 명시적으로 string 타입 설정
+    const uploadedImageUrls: string[] = []
 
     if (!files || files.length === 0) {
       toast.error("이미지를 한 개 이상 업로드해주세요")
@@ -89,7 +88,7 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
     }
 
     try {
-      await deleteImages() // 기존 이미지 삭제 후 새 이미지 업로드
+      await deleteImages()
       for (const file of files) {
         const formData = new FormData()
         formData.append("file", file)
@@ -142,7 +141,7 @@ export default function RoomEditForm({ data }: { data: RoomType }) {
       className="px-4 md:max-w-4xl mx-auto py-8 my-20 flex flex-col gap-8"
       onSubmit={handleSubmit(async (res) => {
         try {
-          const imageUrls = await uploadImages(imageFiles) // 이미지 파일 객체 전달
+          const imageUrls = await uploadImages(imageFiles)
           const result = await axios.patch(`/api/rooms?id=${data.id}`, {
             ...res,
             images: imageUrls,

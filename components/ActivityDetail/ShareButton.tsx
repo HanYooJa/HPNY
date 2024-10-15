@@ -3,7 +3,7 @@
 import { Dialog, Transition } from "@headlessui/react"
 import { Fragment, useState } from "react"
 
-import { ActivityType } from "@/interface" // RoomType을 ActivityType으로 변경
+import { ActivityType } from "@/interface"
 import { CiShare1 } from "react-icons/ci"
 import Image from "next/image"
 import { BLUR_DATA_URL } from "@/constants"
@@ -19,7 +19,6 @@ import toast from "react-hot-toast"
 import Link from "next/link"
 
 export default function ShareButton({ data }: { data: ActivityType }) {
-  // RoomType에서 ActivityType으로 변경
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
   const closeModal = () => {
@@ -104,7 +103,7 @@ export default function ShareButton({ data }: { data: ActivityType }) {
                   </Dialog.Title>
                   <div className="mt-5 flex gap-4 items-center">
                     <Image
-                      src={data?.images?.[0] || "/images/default-activity.jpg"} // 기본 이미지 추가
+                      src={data?.images?.[0] || "/images/default-activity.jpg"}
                       alt="activity img"
                       width={60}
                       height={60}
@@ -131,7 +130,7 @@ export default function ShareButton({ data }: { data: ActivityType }) {
                     </button>
                     {typeof window !== "undefined" && (
                       <Link
-                        href={`mailto:?subject=Comma 활동 공유하기&body=${window.location.href}`} // 제목 및 본문에 맞게 수정
+                        href={`mailto:?subject=Comma 활동 공유하기&body=${window.location.href}`}
                         className="border border-gray-300 font-semibold rounded-lg px-6 py-4 flex items-center gap-4 hover:bg-black/5"
                       >
                         <AiOutlineMail className="text-xl md:text-3xl" />

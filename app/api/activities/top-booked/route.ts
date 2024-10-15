@@ -4,7 +4,6 @@ import prisma from "@/db"
 // 이달의 예약된 활동(Top 5) 데이터를 가져오는 API
 export async function GET() {
   try {
-    // 예약이 가장 많은 상위 5개 활동을 가져옵니다.
     const topBookedActivities = await prisma.activity.findMany({
       orderBy: {
         bookings: {

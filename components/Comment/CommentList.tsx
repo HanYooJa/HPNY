@@ -10,20 +10,19 @@ import "dayjs/locale/ko"
 import utc from "dayjs/plugin/utc"
 import timezone from "dayjs/plugin/timezone"
 
-// UTC 및 Timezone 플러그인 적용
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
 export default function CommentList({
   isLoading,
   comments,
-  activityId = 0, // activityId는 선택적
-  roomId, // roomId는 필수
+  activityId = 0,
+  roomId,
 }: {
   isLoading: boolean
   comments: CommentApiType | null
-  activityId?: number // activityId는 선택적
-  roomId: number // roomId는 필수
+  activityId?: number
+  roomId: number
 }) {
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false)
 
@@ -92,8 +91,8 @@ export default function CommentList({
         <CommentListModal
           isOpen={isOpenModal}
           closeModal={closeModal}
-          roomId={roomId} // roomId 전달
-          activityId={activityId} // activityId 전달
+          roomId={roomId}
+          activityId={activityId}
         />
       )}
     </>

@@ -11,14 +11,13 @@ export default function ActivityItemWithHoverSlider({
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
-  // 자동 슬라이드 효과를 위해 useEffect 추가
   useEffect(() => {
     if (activity.images.length > 1 && !intervalRef.current) {
       intervalRef.current = setInterval(() => {
         setCurrentImageIndex((prevIndex) =>
           prevIndex === activity.images.length - 1 ? 0 : prevIndex + 1,
         )
-      }, 5000) // 5초마다 자동 슬라이드
+      }, 5000)
     }
 
     return () => {

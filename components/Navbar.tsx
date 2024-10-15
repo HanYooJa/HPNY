@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter, usePathname } from "next/navigation" // useRouter와 usePathname 함께 사용
+import { useRouter, usePathname } from "next/navigation"
 import { AiOutlineMenu, AiOutlineUser } from "react-icons/ai"
 import { GiNightSleep } from "react-icons/gi"
 import { useSession, signOut } from "next-auth/react"
@@ -13,7 +13,7 @@ const LOGOUT_USER_MENU = [
   { id: 3, title: "Comma 사용법", url: "/faqs" },
 ]
 
-// role 타입을 명시적으로 정의 (USER 또는 SELLER)
+// role 타입을 정의 (USER 또는 SELLER)
 const LOGIN_USER_MENU = (role: "USER" | "SELLER") => [
   {
     id: 1,
@@ -28,7 +28,7 @@ export default function Navbar() {
   const [showMenu, setShowMenu] = useState<boolean>(false)
   const { status, data: session } = useSession()
   const router = useRouter()
-  const currentPath = usePathname() // 현재 경로 가져오기
+  const currentPath = usePathname()
 
   return (
     <nav className="h-20 z-[20] border border-b-gray-20 w-full shadow-sm p-4 sm:px-10 flex justify-between items-center align-middle fixed top-0 bg-white">

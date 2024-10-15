@@ -29,6 +29,6 @@ export const config = {
     "/payments/:path*",
     "/rooms/register/:path",
     "/users/rooms",
-    "/api/seller/:path*", // 판매자 전용 경로 추가
+    "/api/seller/:path*",
   ],
 }

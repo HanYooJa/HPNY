@@ -8,12 +8,11 @@ export async function GET(
   req: Request,
   { params }: { params: { id: string } },
 ) {
-  const roomId = parseInt(params.id) // 숙소 ID
+  const roomId = parseInt(params.id)
 
-  // 댓글을 데이터베이스에서 조회
   const comments = await prisma.comment.findMany({
     where: { roomId: roomId },
-    include: { user: true }, // 댓글 작성자 정보 포함
+    include: { user: true },
   })
 
   return NextResponse.json(comments, { status: 200 })
@@ -24,8 +23,8 @@ export async function POST(
   req: Request,
   { params }: { params: { id: string } },
 ) {
-  const { id } = params // 숙소 ID
-  const body = await req.json() // 요청 본문에서 댓글 내용 가져오기
+  const { id } = params
+  const body = await req.json()
 
   // 현재 세션 정보 가져오기 (로그인된 사용자)
   const session = await getServerSession(authOptions)
@@ -36,9 +35,9 @@ export async function POST(
   // 댓글을 데이터베이스에 저장
   const comment = await prisma.comment.create({
     data: {
-      roomId: parseInt(id), // roomId 설정
-      body: body.body, // 댓글 내용
-      userId: session.user.id, // 로그인한 사용자 ID
+      roomId: parseInt(id),
+      body: body.body,
+      userId: session.user.id,
     },
   })
 

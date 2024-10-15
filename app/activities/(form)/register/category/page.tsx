@@ -27,8 +27,8 @@ export default function ActivityRegisterCategory() {
       desc: activityForm?.desc || "",
       price: activityForm?.price || 0,
       address: activityForm?.address || "",
-      lat: lat, // number로 변환된 값 설정
-      lng: lng, // number로 변환된 값 설정
+      lat: lat,
+      lng: lng,
     })
 
     router.push("/activities/register/info")

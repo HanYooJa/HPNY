@@ -13,7 +13,6 @@ import "dayjs/locale/ko"
 import utc from "dayjs/plugin/utc"
 import timezone from "dayjs/plugin/timezone"
 
-// UTC 및 Timezone 플러그인 적용
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
@@ -35,7 +34,6 @@ export default function CommentListModal({
   })
   const isPageEnd = !!pageRef?.isIntersecting
 
-  // 댓글을 가져오는 함수 (my=true 파라미터 없이 모든 댓글 조회)
   const fetchComments = async ({ pageParam = 1 }) => {
     let url = `/api/comments?limit=6&page=${pageParam}`
 

@@ -56,7 +56,7 @@ model User {
   emailVerified Boolean?
   phone         String?
   address       String?
-  role          UserRole    @default(USER) // 역할 필드 추가
+  role          UserRole    @default(USER) 
   rooms         Room[]
   activities    Activity[]
   accounts      Account[]
@@ -101,8 +101,8 @@ model Room {
   images              String[]
   imageKeys           String[]
   address             String
-  lat                 Float       // Changed to Float
-  lng                 Float       // Changed to Float
+  lat                 Float       
+  lng                 Float       
   category            String
   desc                String
   price               Int
@@ -117,7 +117,7 @@ model Room {
   hasWifi             Boolean     @default(false)
   hasBarbeque         Boolean     @default(false)
   hasFreeParking      Boolean     @default(false)
-  views               Int         @default(0) // 조회수 필드 추가
+  views               Int         @default(0) 
   userId              String?
   createdAt           DateTime    @default(now())
   likes               Like[]
@@ -141,10 +141,10 @@ model Booking {
   guestCount            Int
   totalDays             Int
   totalAmount           Int
-  roomId                Int?       // roomId is nullable
-  activityId            Int?       // activityId is nullable
-  room                  Room?      @relation(fields: [roomId], references: [id], onDelete: Cascade) // onDelete: Cascade 추가
-  activity              Activity?  @relation(fields: [activityId], references: [id], onDelete: Cascade) // onDelete: Cascade 추가
+  roomId                Int?       
+  activityId            Int?       
+  room                  Room?      @relation(fields: [roomId], references: [id], onDelete: Cascade) 
+  activity              Activity?  @relation(fields: [activityId], references: [id], onDelete: Cascade)
   userId                String
   user                  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt             DateTime   @default(now())
@@ -161,12 +161,12 @@ model Activity {
   images     String[]
   imageKeys  String[]
   address    String
-  lat        Float    // Changed to Float
-  lng        Float    // Changed to Float
+  lat        Float    
+  lng        Float    
   category   String
   desc       String
   price      Int
-  views      Int      @default(0) // 조회수 필드 추가
+  views      Int      @default(0) 
   userId     String?
   createdAt  DateTime @default(now())
   likes      Like[]
@@ -183,7 +183,7 @@ enum BookingStatus {
   PENDING
 }
 
-// 사용자 역할을 위한 Enum 정의
+
 enum UserRole {
   USER
   SELLER

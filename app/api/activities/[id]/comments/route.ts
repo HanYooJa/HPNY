@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import prisma from "@/db"
-import { getServerSession } from "next-auth/next" // next-auth에서 getServerSession import
-import { authOptions } from "@/pages/api/auth/[...nextauth]" // authOptions import
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "@/pages/api/auth/[...nextauth]"
 
 // 활동 댓글 조회 핸들러 (GET)
 export async function GET(
@@ -22,8 +22,8 @@ export async function GET(
 
   return NextResponse.json(
     {
-      totalCount, // 총 댓글 수 반환
-      data: comments, // 댓글 리스트 반환
+      totalCount,
+      data: comments,
     },
     { status: 200 },
   )

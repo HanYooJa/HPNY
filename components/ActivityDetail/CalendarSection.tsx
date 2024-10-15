@@ -11,13 +11,12 @@ export default function CalendarSection() {
   const [showCalendar, setShowCalendar] = useState<boolean>(false)
   const [filterValue, setFilterValue] = useRecoilState(filterState)
 
-  // 기본 체크인 날짜를 당일로 설정
   useEffect(() => {
     if (!filterValue.checkIn) {
       setFilterValue({
         ...filterValue,
-        checkIn: dayjs().format("YYYY-MM-DD"), // 기본 체크인 날짜는 당일
-        checkOut: dayjs().format("YYYY-MM-DD"), // 기본 체크아웃 날짜도 동일하게 설정
+        checkIn: dayjs().format("YYYY-MM-DD"),
+        checkOut: dayjs().format("YYYY-MM-DD"),
       })
     }
     setShowCalendar(true)
@@ -27,7 +26,7 @@ export default function CalendarSection() {
     setFilterValue({
       ...filterValue,
       checkIn: dayjs(e).format("YYYY-MM-DD"),
-      checkOut: dayjs(e).format("YYYY-MM-DD"), // 체크인과 동일한 날로 기본 설정
+      checkOut: dayjs(e).format("YYYY-MM-DD"),
     })
   }
 
@@ -38,7 +37,6 @@ export default function CalendarSection() {
     })
   }
 
-  // 예약 버튼 활성화 조건 계산
   const isBookingValid =
     filterValue.checkIn &&
     filterValue.checkOut &&

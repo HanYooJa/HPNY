@@ -13,7 +13,6 @@ export default function ActivityImageListModal({
   closeModal: () => void
   data: ActivityType
 }) {
-  // 기본 이미지 설정
   const defaultImage = "/images/default-activity.jpg"
 
   return (

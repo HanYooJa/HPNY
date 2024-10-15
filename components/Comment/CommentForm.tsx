@@ -29,23 +29,21 @@ export default function CommentForm({
     try {
       let apiUrl = ""
 
-      // API URL 설정
       if (room) {
         apiUrl = `/api/rooms/${room.id}/comments`
       } else if (activityId) {
         apiUrl = `/api/activities/${activityId}/comments`
       }
 
-      // API 요청
       const res = await axios.post(apiUrl, {
         body: comment,
-        userId: session?.user?.id, // 사용자 ID 추가
+        userId: session?.user?.id,
       })
 
       if (res.status === 200) {
         toast.success("댓글이 작성되었습니다.")
-        setComment("") // 입력 필드 초기화
-        refetch() // 댓글 목록 새로고침
+        setComment("")
+        refetch()
       } else {
         toast.error("댓글 작성에 실패했습니다.")
       }

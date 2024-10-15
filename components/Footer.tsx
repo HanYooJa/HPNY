@@ -31,7 +31,10 @@ export default function Footer() {
         웹사이트 제공자: <Link href="/introduce">HPNY</Link> | 제작자: 박진아,
         노수빈, 양유나, 한유정 | 호스팅 서비스 제공업체 : vercel | comma
         플랫폼을 통하여 예약된 숙소, 체험, 호스트 서비스에 관한 의무와 책임은
-        해당 서비스를 제공하는 호스트에게 있습니다.
+        해당 서비스를 제공하는 호스트에게 있습니다. 아이콘은{" "}
+        <a href="https://www.flaticon.com/free-icons/moon" title="moon icons">
+          Moon icons created by Freepik - Flaticon
+        </a>
       </div>
     </footer>
   )

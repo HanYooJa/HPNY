@@ -1,6 +1,5 @@
-// app/api/rooms/[id]/view/route.ts
 import { NextRequest, NextResponse } from "next/server"
-import db from "@/db" // 데이터베이스 연결
+import db from "@/db"
 
 export async function POST(
   req: NextRequest,
@@ -9,10 +8,9 @@ export async function POST(
   const roomId = params.id
 
   try {
-    // 조회수 증가
     const room = await db.room.update({
       where: { id: Number(roomId) },
-      data: { views: { increment: 1 } }, // 조회수 1 증가
+      data: { views: { increment: 1 } },
     })
 
     return NextResponse.json(room, { status: 200 })

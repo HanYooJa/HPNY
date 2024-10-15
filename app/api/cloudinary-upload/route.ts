@@ -3,16 +3,14 @@ import cloudinary from "cloudinary"
 import formidable from "formidable"
 import { IncomingMessage } from "http"
 import { Readable } from "stream"
-import fs from "fs" // fs 모듈 추가
+import fs from "fs"
 
-// Cloudinary 설정
 cloudinary.v2.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
   api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
   api_secret: process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET,
 })
 
-// Next.js 13에서 `config` 대신 `runtime` 설정을 사용
 export const runtime = "nodejs"
 
 // 업로드 디렉토리 확인 및 생성
@@ -21,7 +19,7 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir)
 }
 
-// Formidable을 사용하여 파일 파싱하는 함수
+// Formidable을 사용하여 파일 파싱
 async function parseForm(req: IncomingMessage) {
   const form = formidable({
     multiples: true,
@@ -39,7 +37,7 @@ async function parseForm(req: IncomingMessage) {
   )
 }
 
-// Request를 Readable Stream으로 변환하는 함수
+// Request를 Readable Stream으로 변환
 async function convertToIncomingMessage(
   request: Request,
 ): Promise<IncomingMessage> {
@@ -47,7 +45,7 @@ async function convertToIncomingMessage(
   const reader = body?.getReader()
   const readable = new Readable()
 
-  readable._read = () => {} // 빈 함수 설정
+  readable._read = () => {}
 
   if (reader) {
     let done = false
@@ -58,7 +56,7 @@ async function convertToIncomingMessage(
         readable.push(Buffer.from(value))
       }
     }
-    readable.push(null) // 끝을 알리기 위해 null을 푸시
+    readable.push(null)
   }
 
   const incomingMessage = Object.assign(readable, {

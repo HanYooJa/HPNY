@@ -4,13 +4,12 @@ import { filterState } from "@/atom"
 import { ActivityType } from "@/interface"
 import { useRecoilState, useRecoilValue } from "recoil"
 import dayjs from "dayjs"
-import isSameOrAfter from "dayjs/plugin/isSameOrAfter" // 플러그인 추가
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter"
 import "dayjs/locale/ko"
 import { useEffect } from "react"
 import { calculatedFilterState } from "@/atom/selector"
 import { useRouter } from "next/navigation"
 
-// 플러그인 활성화
 dayjs.extend(isSameOrAfter)
 
 export default function ActivityBookingSection({
@@ -24,7 +23,6 @@ export default function ActivityBookingSection({
   const [filterValue, setFilterValue] = useRecoilState(filterState)
   const { guestCount } = useRecoilValue(calculatedFilterState)
 
-  // 체크인과 체크아웃의 기본값을 오늘 날짜로 설정
   useEffect(() => {
     if (!filterValue.checkIn) {
       const today = dayjs().format("YYYY-MM-DD")
@@ -36,18 +34,15 @@ export default function ActivityBookingSection({
     }
   }, [])
 
-  // 체크인, 체크아웃 날짜 계산
   const checkInDate = dayjs(filterValue?.checkIn)
   const checkOutDate = dayjs(filterValue?.checkOut)
 
-  // 체크아웃 날짜가 체크인 날짜와 같으면 1회로 계산, 그렇지 않으면 차이 + 1
   const dayCount = checkOutDate.isSame(checkInDate, "day")
     ? 1
     : checkOutDate.diff(checkInDate, "day") + 1
 
   const totalAmount = data?.price * dayCount
 
-  // 체크아웃 날짜가 체크인보다 이후 또는 같은 날짜일 때만 예약 가능
   const checkFormValid =
     guestCount > 0 && checkOutDate.isSameOrAfter(checkInDate)
 
@@ -63,7 +58,7 @@ export default function ActivityBookingSection({
     setFilterValue({
       ...filterValue,
       checkIn: newCheckInDate,
-      checkOut: newCheckInDate, // 체크인과 동일한 날짜로 체크아웃 기본값 설정
+      checkOut: newCheckInDate,
     })
   }
 

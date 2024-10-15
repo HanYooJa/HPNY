@@ -54,7 +54,6 @@ export default function UserActivities() {
     },
   )
 
-  // Cloudinary로 이미지를 삭제하는 함수
   async function deleteImages(imageKeys: string[] | null) {
     if (imageKeys) {
       for (const key of imageKeys) {
@@ -81,7 +80,6 @@ export default function UserActivities() {
 
     if (confirm && data) {
       try {
-        // 먼저 Cloudinary에서 이미지 삭제
         await deleteImages(data.imageKeys || null)
         const result = await axios.delete(`/api/activities?id=${data.id}`)
 

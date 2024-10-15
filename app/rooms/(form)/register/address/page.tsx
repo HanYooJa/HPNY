@@ -11,8 +11,8 @@ import AddressSearch from "@/components/Form/AddressSearch"
 
 interface RoomAddressProps {
   address?: string
-  lat?: number // 변경된 부분: number 타입으로 설정
-  lng?: number // 변경된 부분: number 타입으로 설정
+  lat?: number
+  lng?: number
 }
 
 export default function RoomRegisterAddress() {
@@ -26,8 +26,8 @@ export default function RoomRegisterAddress() {
   } = useForm<RoomAddressProps>()
 
   const onSubmit = (data: RoomAddressProps) => {
-    const lat = Number(data.lat) // number 타입으로 변환
-    const lng = Number(data.lng) // number 타입으로 변환
+    const lat = Number(data.lat)
+    const lng = Number(data.lng)
 
     if (isNaN(lat) || isNaN(lng)) {
       alert("위도와 경도가 유효하지 않습니다. 다시 시도해주세요.")
@@ -37,8 +37,8 @@ export default function RoomRegisterAddress() {
     setRoomForm({
       ...roomForm,
       address: data.address,
-      lat: lat, // number 타입으로 설정
-      lng: lng, // number 타입으로 설정
+      lat: lat,
+      lng: lng,
     })
 
     router.push("/rooms/register/feature")
@@ -47,8 +47,8 @@ export default function RoomRegisterAddress() {
   useEffect(() => {
     if (roomForm) {
       setValue("address", roomForm.address)
-      setValue("lat", roomForm.lat) // number으로 설정
-      setValue("lng", roomForm.lng) // number으로 설정
+      setValue("lat", roomForm.lat)
+      setValue("lng", roomForm.lng)
     }
   }, [roomForm, setValue])
 

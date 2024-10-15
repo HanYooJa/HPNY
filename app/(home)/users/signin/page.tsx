@@ -7,19 +7,18 @@ import { FcGoogle } from "react-icons/fc"
 import { SiNaver } from "react-icons/si"
 import { RiKakaoTalkFill } from "react-icons/ri"
 import toast from "react-hot-toast"
-import { useSetRecoilState } from "recoil" // Recoil 상태 설정을 위해 추가
-import { roleState } from "@/atom" // roleState import
+import { useSetRecoilState } from "recoil"
+import { roleState } from "@/atom"
 
 export default function SignInPage() {
   const router = useRouter()
   const { status, data: session } = useSession()
   const [isSeller, setIsSeller] = useState(false)
-  const setRole = useSetRecoilState(roleState) // Recoil의 roleState 설정
+  const setRole = useSetRecoilState(roleState)
 
   useEffect(() => {
     if (status === "authenticated") {
-      // 로그인한 후 역할 설정
-      setRole(session?.user?.role || "USER") // 세션에서 역할을 가져와 roleState에 설정
+      setRole(session?.user?.role || "USER")
       if (session?.user?.role === "SELLER") {
         router.push("/seller/mypage")
       } else {

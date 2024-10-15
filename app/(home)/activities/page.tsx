@@ -18,7 +18,6 @@ import Slider from "react-slick"
 import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
 
-// "이달의 활동" 데이터를 가져옴
 const fetchTopBookedActivities = async () => {
   const { data } = await axios.get("/api/activities/top-booked")
   return data
@@ -76,11 +75,10 @@ export default function ActivityPage() {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    autoplay: true, // 자동 슬라이드를 켬
-    autoplaySpeed: 5000, // 5초마다 다음 활동으로 자동으로 넘어감
+    autoplay: true, // 자동 슬라이드
+    autoplaySpeed: 5000, // 5초마다 다음 활동으로
   }
 
-  // 개별 활동에 대한 이미지 슬라이드 로직
   const [activeActivity, setActiveActivity] = useState<number | null>(null)
   const [currentImageIndex, setCurrentImageIndex] = useState<{
     [key: number]: number
@@ -91,10 +89,9 @@ export default function ActivityPage() {
       setActiveActivity(activityId)
       setCurrentImageIndex((prevState) => ({
         ...prevState,
-        [activityId]: 0, // 처음엔 첫 번째 이미지로 설정
+        [activityId]: 0, // 처음엔 첫 번째 이미지
       }))
 
-      // 2초마다 이미지 변경
       const interval = setInterval(() => {
         setCurrentImageIndex((prevState) => ({
           ...prevState,
@@ -115,7 +112,7 @@ export default function ActivityPage() {
     }
     setCurrentImageIndex((prevState) => ({
       ...prevState,
-      [activityId]: 0, // 마우스를 떼면 첫 번째 이미지로 되돌림
+      [activityId]: 0,
     }))
   }
 

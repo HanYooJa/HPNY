@@ -33,7 +33,6 @@ export default function RoomRegisterImage() {
     formState: { errors, isSubmitting },
   } = useForm<RoomImageProps>()
 
-  // 파일 선택 시 호출되는 함수
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target
     if (!files) return
@@ -104,7 +103,7 @@ export default function RoomRegisterImage() {
       if (result.status === 200) {
         toast.success("숙소를 등록했습니다.")
         resetRoomForm()
-        router.push("/") // 메인 페이지로 리다이렉션
+        router.push("/")
       } else {
         console.error("Error in server response:", result.statusText)
         toast.error("데이터 생성 중 문제가 발생했습니다.")

@@ -1,24 +1,23 @@
 import { NextResponse } from "next/server"
-import prisma from "@/db" // 데이터베이스 설정 가져오기
+import prisma from "@/db"
 
 export async function GET(
   req: Request,
   { params }: { params: { id: string } },
 ) {
   try {
-    // 활동 예약 정보를 가져옴
     const booking = await prisma.booking.findUnique({
       where: {
-        id: parseInt(params.id), // 예약 ID로 조회
+        id: parseInt(params.id),
       },
       include: {
-        user: true, // 예약한 사용자 정보 포함
+        user: true,
         activity: {
           select: {
             id: true,
             title: true,
-            images: true, // String[] 타입인 images 필드 선택
-            comments: true, // 활동과 연결된 후기 정보 포함
+            images: true,
+            comments: true,
           },
         },
       },
@@ -34,7 +33,7 @@ export async function GET(
       booking.activity &&
       (!booking.activity.images || booking.activity.images.length === 0)
     ) {
-      booking.activity.images = ["/images/default-image.png"] // 기본 이미지 경로
+      booking.activity.images = ["/images/default-image.png"]
     }
 
     // 예약 정보 반환

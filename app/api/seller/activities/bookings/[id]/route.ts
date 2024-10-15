@@ -15,14 +15,14 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized access" }, { status: 401 })
   }
 
-  const bookingId = parseInt(params.id) // 예약 ID를 숫자로 변환
+  const bookingId = parseInt(params.id)
 
   try {
     const booking = await prisma.booking.findUnique({
       where: { id: bookingId },
       include: {
-        user: true, // 예약한 사용자 정보 포함
-        activity: true, // 예약된 활동 정보 포함
+        user: true,
+        activity: true,
       },
     })
 

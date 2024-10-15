@@ -1,4 +1,3 @@
-// app/activities/(form)/register/image/page.tsx
 /* eslint-disable @next/next/no-img-element */
 "use client"
 
@@ -48,7 +47,6 @@ export default function ActivityRegisterImage() {
     setImages((prevImages) => [...prevImages, ...Array.from(files)])
   }
 
-  // 이미지 업로드 함수
   async function uploadImages(images: File[]) {
     const uploadedImageUrls: string[] = []
 
@@ -68,7 +66,7 @@ export default function ActivityRegisterImage() {
           `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
           formData,
         )
-        const imageUrl = res.data.secure_url // Cloudinary에서 받은 이미지 URL
+        const imageUrl = res.data.secure_url
         if (imageUrl) {
           uploadedImageUrls.push(imageUrl) // 이미지 URL을 배열에 저장
         }
@@ -81,7 +79,6 @@ export default function ActivityRegisterImage() {
     return uploadedImageUrls
   }
 
-  // 이미지 등록 처리
   const onSubmit = async () => {
     try {
       setDisableSubmit(true)

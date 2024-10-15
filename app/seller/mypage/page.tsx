@@ -10,7 +10,6 @@ import { useRouter } from "next/navigation"
 import { FaBookmark } from "react-icons/fa6"
 
 export default function SellerMyPage() {
-  // 최상단에서 훅 호출
   const { data: session, status, update } = useSession()
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -27,7 +26,7 @@ export default function SellerMyPage() {
     }
 
     if (status === "authenticated") {
-      syncSession() // 조건부 호출은 useEffect 내부에서만 처리
+      syncSession()
     }
   }, [session, status, update])
 
@@ -39,17 +38,16 @@ export default function SellerMyPage() {
         console.log("Updated session:", sessionData)
 
         if (sessionData?.user?.role !== "SELLER") {
-          router.push("/users/mypage") // SELLER가 아닐 경우 사용자 마이페이지로 리디렉션
+          router.push("/users/mypage") // SELLER가 아닐 경우 사용자 마이페이지로
         }
       }
     }
 
     if (status === "authenticated") {
-      checkRoleAndRedirect() // 조건부 호출은 useEffect 내부에서만 처리
+      checkRoleAndRedirect()
     }
   }, [status, router])
 
-  // 역할 전환 버튼 핸들러
   const handleSwitchRole = async () => {
     setLoading(true)
     try {
@@ -61,9 +59,8 @@ export default function SellerMyPage() {
         alert("판매자로 전환되었습니다.")
       }
 
-      // 세션을 다시 가져와서 업데이트
       await update()
-      const newSession = await getSession() // 새로운 세션 확인
+      const newSession = await getSession()
       console.log("Updated session after role switch:", newSession)
 
       // 역할에 따라 적절한 페이지로 리디렉션
@@ -106,7 +103,6 @@ export default function SellerMyPage() {
         </div>
       </div>
 
-      {/* 판매자 관련 메뉴 */}
       <div className="grid md:grid-cols-3 gap-4 mt-12 mb-20">
         <Link
           href="/rooms/register/category"
@@ -161,7 +157,7 @@ export default function SellerMyPage() {
           </div>
         </Link>
         <Link
-          href="/seller/activities/bookings" // 새로 추가된 링크
+          href="/seller/activities/bookings"
           className="shadow-lg rounded-lg flex flex-col justify-between p-4 gap-12 hover:shadow-xl"
         >
           <FaBookmark className="text-xl md:text-3xl" />
@@ -174,7 +170,6 @@ export default function SellerMyPage() {
         </Link>
       </div>
 
-      {/* 역할 전환 버튼 */}
       <div className="mt-8">
         <button
           type="button"

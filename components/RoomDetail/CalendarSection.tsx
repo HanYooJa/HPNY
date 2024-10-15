@@ -16,7 +16,7 @@ export default function CalendarSection() {
     if (!filterValue.checkIn) {
       setFilterValue({
         ...filterValue,
-        checkIn: dayjs().format("YYYY-MM-DD"), // 기본 체크인 날짜는 당일
+        checkIn: dayjs().format("YYYY-MM-DD"),
       })
     }
     setShowCalendar(true)
@@ -36,7 +36,6 @@ export default function CalendarSection() {
     })
   }
 
-  // 예약 버튼 활성화 조건 계산
   const isBookingValid =
     filterValue.checkIn &&
     filterValue.checkOut &&

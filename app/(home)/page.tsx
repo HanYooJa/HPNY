@@ -14,9 +14,8 @@ import { filterState } from "@/atom"
 import Slider from "react-slick"
 import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
-import RoomItemWithHoverSlider from "@/components/RoomItemWithHoverSlider" // 이달의 숙소에 사용
+import RoomItemWithHoverSlider from "@/components/RoomItemWithHoverSlider"
 
-// "이달의 숙소" 데이터를 가져오는 함수
 const fetchTopBookedRooms = async () => {
   const { data } = await axios.get("/api/rooms/top-booked")
   return data
@@ -34,7 +33,6 @@ export default function Home() {
     category: filterValue.category,
   }
 
-  // 정렬을 위한 상태 추가
   const [sortBy, setSortBy] = useState("bookings")
 
   const fetchRooms = async ({ pageParam = 1 }) => {
@@ -42,7 +40,7 @@ export default function Home() {
       params: {
         limit: 12,
         page: pageParam,
-        sortBy, // 정렬 파라미터 추가
+        sortBy,
         ...filterParams,
       },
     })
@@ -108,7 +106,7 @@ export default function Home() {
       setActiveRoom(roomId)
       setCurrentImageIndex((prevState) => ({
         ...prevState,
-        [roomId]: 0, // 처음엔 첫 번째 이미지로 설정
+        [roomId]: 0,
       }))
     }
   }
@@ -117,7 +115,7 @@ export default function Home() {
     setActiveRoom(null)
     setCurrentImageIndex((prevState) => ({
       ...prevState,
-      [roomId]: 0, // 마우스를 떼면 첫 번째 이미지로 되돌림
+      [roomId]: 0,
     }))
   }
 
@@ -174,7 +172,6 @@ export default function Home() {
 
       <CategoryList />
 
-      {/* 정렬 옵션 왼쪽 배치 */}
       <div className="mb-4 text-left pl-6">
         <label htmlFor="sortBy" className="font-semibold mr-2">
           정렬 기준:

@@ -25,15 +25,15 @@ export default function UpgradeToSeller() {
 
   const checkInitialRole = async () => {
     if (!session?.user?.id) {
-      return false // 세션이 없으면 업그레이드할 수 없음
+      return false
     }
 
     try {
       const { data } = await axios.get(
         `/api/user-role?userId=${session.user.id}`,
       )
-      console.log("초기 역할 확인 결과:", data) // 로그 추가
-      return data.initialRole === "USER" // USER일 때 업그레이드 가능
+      console.log("초기 역할 확인 결과:", data)
+      return data.initialRole === "USER"
     } catch (error) {
       console.error("Failed to check initial role:", error)
       return false
@@ -69,7 +69,7 @@ export default function UpgradeToSeller() {
   }
 
   if (status === "loading") {
-    return <p>로딩 중...</p> // 로딩 중일 때 메시지 표시
+    return <p>로딩 중...</p>
   }
 
   return isEligible ? (

@@ -30,7 +30,7 @@ export async function GET(req: Request) {
       },
       include: {
         room: true,
-        activity: true, // 활동도 포함
+        activity: true,
       },
       skip: skipPage,
       take: parseInt(limit),

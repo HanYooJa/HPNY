@@ -21,8 +21,8 @@ export async function GET(
     const booking = await prisma.booking.findUnique({
       where: { id: parseInt(bookingId) },
       include: {
-        user: true, // 예약한 사용자 정보 포함
-        room: true, // 예약된 숙소 정보 포함
+        user: true,
+        room: true,
       },
     })
 

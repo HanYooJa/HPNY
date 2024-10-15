@@ -24,7 +24,7 @@ export default function BookingSection({
 
   const handleSubmit = () => {
     router.push(
-      `/rooms/${data.id}/bookings?checkIn=${filterValue?.checkIn}&checkOut=${filterValue?.checkOut}&guestCount=${guestCount}&totalAmount=${totalAmount}&totalDays=${dayCount}&type=room`, // type=room 추가
+      `/rooms/${data.id}/bookings?checkIn=${filterValue?.checkIn}&checkOut=${filterValue?.checkOut}&guestCount=${guestCount}&totalAmount=${totalAmount}&totalDays=${dayCount}&type=room`,
     )
   }
 

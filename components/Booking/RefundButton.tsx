@@ -48,7 +48,6 @@ export default function RefundButton({ booking, canRefund }: RefundProps) {
 
   return (
     <div className="flex flex-col items-center mb-4">
-      {/* 결제가 완료되지 않은 경우에만 PayPal 버튼을 표시 */}
       <PayPalScriptProvider
         options={{ clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "" }}
       >
@@ -84,7 +83,6 @@ export default function RefundButton({ booking, canRefund }: RefundProps) {
         )}
       </PayPalScriptProvider>
 
-      {/* 무료 취소가 가능한 경우에만 예약 취소 버튼 활성화 */}
       {booking?.status === "CANCEL" || isRefund ? (
         <button
           className="bg-lime-600 hover:bg-lime-500 text-white rounded-md disabled:bg-gray-300 px-5 py-2.5 w-full mt-4"

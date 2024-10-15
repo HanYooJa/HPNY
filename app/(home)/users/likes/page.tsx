@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useEffect, useRef } from "react"
-import CategoryList from "@/components/CategoryList"
 import { GridLayout, RoomItem } from "@/components/RoomList"
 import ActivityItem from "@/components/ActivityItem"
 import { useInfiniteQuery } from "react-query"

@@ -19,7 +19,7 @@ const RoomItemWithHoverSlider: React.FC<RoomItemWithHoverSliderProps> = ({
         setCurrentImageIndex((prevIndex) =>
           prevIndex === room.images.length - 1 ? 0 : prevIndex + 1,
         )
-      }, 2000) // 2초마다 이미지 변경
+      }, 2000)
     }
   }
 
@@ -31,7 +31,6 @@ const RoomItemWithHoverSlider: React.FC<RoomItemWithHoverSliderProps> = ({
     setCurrentImageIndex(0) // 첫 번째 이미지로 돌아감
   }
 
-  // 컴포넌트가 언마운트 될 때 interval을 정리해줌
   useEffect(() => {
     return () => {
       if (intervalRef.current) {

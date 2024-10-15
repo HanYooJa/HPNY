@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server"
-import prisma from "@/db" // 데이터베이스 설정 가져오기
-import { getServerSession } from "next-auth" // 세션 정보 가져오기
-import { authOptions } from "@/pages/api/auth/[...nextauth]" // 인증 옵션 가져오기
+import prisma from "@/db"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/pages/api/auth/[...nextauth]"
 
 // GET 요청: 사용자가 등록한 활동의 예약 리스트를 가져옴
 export async function GET(req: Request) {
-  const session = await getServerSession(authOptions) // 세션 정보 가져오기
+  const session = await getServerSession(authOptions)
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized user" }, { status: 401 })
   }
 
-  const userId = session.user.id // 사용자 ID
+  const userId = session.user.id
 
   const { searchParams } = new URL(req.url)
   const page = parseInt(searchParams.get("page") || "1")
@@ -20,26 +20,26 @@ export async function GET(req: Request) {
     const bookings = await prisma.booking.findMany({
       where: {
         activity: {
-          userId: userId, // 활동의 판매자 ID로 필터링
+          userId: userId,
         },
       },
       include: {
-        user: true, // 예약한 사용자 정보 포함
+        user: true,
         activity: {
           select: {
             id: true,
             title: true,
-            images: true, // String[] 타입인 images 필드 선택
+            images: true,
           },
         },
       },
-      skip: (page - 1) * limit, // 페이지네이션
-      take: limit, // 페이지당 데이터 수
+      skip: (page - 1) * limit,
+      take: limit,
     })
 
     if (!bookings.length) {
       return NextResponse.json(
-        { message: "No bookings found" },
+        { message: "예약을 찾을 수 없습니다." },
         { status: 404 },
       )
     }
@@ -56,7 +56,7 @@ export async function GET(req: Request) {
 
 // POST 요청: 새로운 활동 예약 생성
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions) // 세션 정보 가져오기
+  const session = await getServerSession(authOptions)
   const formData = await req.json()
 
   if (!session?.user) {
@@ -71,7 +71,6 @@ export async function POST(req: Request) {
   const { activityId, checkIn, checkOut, guestCount, totalAmount, totalDays } =
     formData
 
-  // activityId 유효성 검사
   if (!activityId) {
     return NextResponse.json(
       { error: "Activity ID is required" },
@@ -85,13 +84,13 @@ export async function POST(req: Request) {
     const booking = await prisma.booking.create({
       data: {
         activityId: parseInt(activityId),
-        userId: session.user.id, // 로그인한 사용자 ID
+        userId: session.user.id,
         checkIn: new Date(checkIn),
         checkOut: new Date(checkOut),
         guestCount: parseInt(guestCount),
         totalAmount: parseInt(totalAmount),
         totalDays: parseInt(totalDays),
-        status: "SUCCESS", // 예약 상태를 SUCCESS로 설정
+        status: "SUCCESS",
       },
     })
 

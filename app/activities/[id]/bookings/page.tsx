@@ -21,7 +21,6 @@ export default function ActivityBookingPage({
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // 활동 데이터를 가져오는 함수
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -36,7 +35,6 @@ export default function ActivityBookingPage({
     fetchData()
   }, [id])
 
-  // 로딩 상태 처리
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -45,7 +43,6 @@ export default function ActivityBookingPage({
     )
   }
 
-  // 에러 상태 처리
   if (error) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -69,7 +66,6 @@ export default function ActivityBookingPage({
           활동 예약 확인 및 결제
         </h1>
         <div className="grid md:grid-cols-2 gap-20">
-          {/* 예약 정보 */}
           <div className="flex flex-col gap-6 border-y my-8 py-8">
             <h2 className="text-lg md:text-2xl font-semibold">예약 정보</h2>
             <div>
@@ -86,7 +82,6 @@ export default function ActivityBookingPage({
             </div>
           </div>
 
-          {/* 활동 정보 */}
           <div className="flex flex-col gap-6 border-y my-8 py-8">
             <h2 className="text-lg md:text-2xl font-semibold">활동 정보</h2>
 
@@ -110,7 +105,6 @@ export default function ActivityBookingPage({
               </div>
             </div>
 
-            {/* 요금 정보 */}
             <h2 className="text-lg md:text-2xl font-semibold">
               요금 세부 정보
             </h2>
@@ -132,7 +126,6 @@ export default function ActivityBookingPage({
   )
 }
 
-// 활동 데이터를 가져오는 함수
 async function getActivityData(id: string) {
   try {
     const res = await fetch(

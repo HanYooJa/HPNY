@@ -51,12 +51,10 @@ export default function SwitchRoleButton({ isSeller }: { isSeller: boolean }) {
     }
   }
 
-  // role이 SELLER인 경우, 판매자 전환 버튼 숨기기
   if (session?.user?.role === "SELLER" && isSeller) {
     return null
   }
 
-  // 판매자로 전환하기 버튼 렌더링
   return (
     <button
       onClick={handleSwitchRole}

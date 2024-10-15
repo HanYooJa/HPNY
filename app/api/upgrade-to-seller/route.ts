@@ -6,7 +6,6 @@ import prisma from "@/db"
 // 판매자 전환 API 핸들러
 export async function POST(req: Request) {
   try {
-    // 세션 가져오기
     const session = await getServerSession(authOptions)
 
     if (!session || !session.user?.id) {
@@ -26,7 +25,6 @@ export async function POST(req: Request) {
       )
     }
 
-    // 현재 사용자 ID 가져오기
     const userId = session.user.id
 
     // 역할을 SELLER로 업데이트
@@ -38,11 +36,11 @@ export async function POST(req: Request) {
     console.log("업데이트된 사용자 정보:", updatedUser)
 
     return NextResponse.json(
-      { message: "User upgraded to Seller successfully.", user: updatedUser },
+      { message: "성공적으로 업그레이드했습니다.", user: updatedUser },
       { status: 200 },
     )
   } catch (error) {
-    console.error("Failed to upgrade user to seller:", error)
+    console.error("업그레이드에 실패했습니다.:", error)
     return NextResponse.json(
       {
         error: `Failed to upgrade user to seller: ${error instanceof Error ? error.message : "Unknown error"}`,

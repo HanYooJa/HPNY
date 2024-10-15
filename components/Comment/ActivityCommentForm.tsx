@@ -6,7 +6,7 @@ import { toast } from "react-hot-toast"
 
 interface ActivityCommentFormProps {
   activityId: number
-  refetch: () => void // 댓글 목록 새로고침 함수
+  refetch: () => void
 }
 
 export default function ActivityCommentForm({
@@ -23,13 +23,13 @@ export default function ActivityCommentForm({
 
     try {
       const res = await axios.post(`/api/activities/${activityId}/comments`, {
-        body: comment, // 요청 본문에 댓글 내용 추가
+        body: comment,
       })
 
       if (res.status === 200) {
         toast.success("댓글이 작성되었습니다.")
-        setComment("") // 입력 필드 초기화
-        refetch() // 댓글 목록 새로고침
+        setComment("")
+        refetch()
       } else {
         toast.error("댓글 작성에 실패했습니다.")
       }

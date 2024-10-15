@@ -1,4 +1,3 @@
-// app/activities/(form)/register/address/page.tsx (ActivityRegisterAddress Component)
 "use client"
 
 import { useEffect } from "react"
@@ -28,31 +27,27 @@ export default function ActivityRegisterAddress() {
   } = useForm<ActivityAddressProps>()
 
   const onSubmit = (data: ActivityAddressProps) => {
-    // useForm에서 최신 위도와 경도 값을 가져오기
     const lat = getValues("lat")
     const lng = getValues("lng")
 
-    // 로그를 추가하여 lat과 lng 값 확인
     console.log("Submitted lat:", lat)
     console.log("Submitted lng:", lng)
 
-    // lat과 lng가 유효한지 확인
     if (lat === undefined || lng === undefined || isNaN(lat) || isNaN(lng)) {
       alert("위도와 경도가 유효하지 않습니다. 다시 시도해주세요.")
       return
     }
 
-    // Recoil 상태 업데이트
     setActivityForm({
       ...activityForm,
       address: data?.address || "",
       lat: lat,
       lng: lng,
-      title: activityForm?.title || "", // 기본값 설정
-      desc: activityForm?.desc || "", // 기본값 설정
-      price: activityForm?.price || 0, // 기본값 설정
-      images: activityForm?.images || [], // 기본값 설정
-      category: activityForm?.category || "", // 기본값 설정
+      title: activityForm?.title || "",
+      desc: activityForm?.desc || "",
+      price: activityForm?.price || 0,
+      images: activityForm?.images || [],
+      category: activityForm?.category || "",
     })
 
     console.log("Updated activityForm:", activityForm)

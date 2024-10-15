@@ -8,7 +8,7 @@ import { AiOutlineUser, AiOutlineHeart, AiOutlineComment } from "react-icons/ai"
 import { BsBookmark } from "react-icons/bs"
 import axios from "axios"
 import { useRecoilState } from "recoil"
-import { roleState } from "@/atom" // roleState import
+import { roleState } from "@/atom"
 
 export default function UserMyPage() {
   const { data: session, status } = useSession()
@@ -29,11 +29,11 @@ export default function UserMyPage() {
       if (currentRole === "USER") {
         await axios.post("/api/upgrade-to-seller")
         alert("판매자로 전환되었습니다.")
-        setCurrentRole("SELLER") // Recoil 상태 업데이트
+        setCurrentRole("SELLER")
       } else {
         await axios.post("/api/switch-to-user")
         alert("사용자로 전환되었습니다.")
-        setCurrentRole("USER") // Recoil 상태 업데이트
+        setCurrentRole("USER")
       }
 
       const newSession = await getSession()
@@ -119,12 +119,11 @@ export default function UserMyPage() {
         </Link>
       </div>
 
-      {/* roleState에 따라 버튼 렌더링 */}
       <div className="mt-8">
         <button
           type="button"
           onClick={handleSwitchRole}
-          className="bg-blue-600 text-white py-2 px-4 rounded"
+          className="bg-lime-600 text-white py-2 px-4 rounded"
           disabled={loading}
         >
           {loading

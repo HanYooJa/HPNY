@@ -14,7 +14,7 @@ export default function ActivitySearchFilter() {
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             setQ({ q: e?.target?.value })
           }}
-          placeholder="체험명 검색" // 주석을 JSX 외부로 이동
+          placeholder="체험명 검색"
           className="w-full block p-3 text-sm border border-gray-300 rounded-lg outline-none focus:border-lime-500 text-gray-800"
         />
         <AiOutlineSearch className="w-6 h-6" />

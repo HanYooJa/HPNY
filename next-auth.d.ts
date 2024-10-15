@@ -7,12 +7,12 @@ declare module "next-auth" {
       name?: string | null
       email?: string | null
       image?: string | null
-      role?: string // role 속성 추가
-      permissions?: string[] // 추가: permissions 속성
-      initialRole?: string // 추가: initialRole 속성
-      isSeller?: boolean // 추가: isSeller 속성
+      role?: string
+      permissions?: string[]
+      initialRole?: string
+      isSeller?: boolean
     }
-    accessToken?: string // accessToken 속성 추가
+    accessToken?: string
   }
 
   interface User {
@@ -20,10 +20,10 @@ declare module "next-auth" {
     name?: string | null
     email?: string | null
     image?: string | null
-    role?: string // role 속성 추가
-    permissions?: string[] // 추가: permissions 속성
-    initialRole?: string // 추가: initialRole 속성
-    isSeller?: boolean // 추가: isSeller 속성
+    role?: string
+    permissions?: string[]
+    initialRole?: string
+    isSeller?: boolean
   }
 }
 
@@ -33,10 +33,10 @@ declare module "next-auth/jwt" {
     name?: string | null
     email?: string | null
     picture?: string | null
-    role?: string // role 속성 추가
-    permissions?: string[] // 추가: permissions 속성
-    initialRole?: string // 추가: initialRole 속성
-    isSeller?: boolean // 추가: isSeller 속성
-    accessToken?: string // accessToken 속성 추가
+    role?: string
+    permissions?: string[]
+    initialRole?: string
+    isSeller?: boolean
+    accessToken?: string
   }
 }

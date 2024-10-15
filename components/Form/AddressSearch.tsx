@@ -1,4 +1,3 @@
-// components/Form/AddressSearch.tsx
 import { useState } from "react"
 import Script from "next/script"
 import DaumPostcodeEmbed from "react-daum-postcode"
@@ -43,7 +42,6 @@ export default function AddressSearch({
     setValue("address", fullAddress)
     setIsOpen(false)
 
-    // Kakao Maps의 Geocoder를 사용하여 주소로 위도와 경도 검색
     if (isKakaoMapLoaded) {
       const geocoder = new window.kakao.maps.services.Geocoder()
       geocoder.addressSearch(fullAddress, function (result: any, status: any) {
@@ -52,7 +50,6 @@ export default function AddressSearch({
           const lng = parseFloat(result[0].x)
           console.log(`위도: ${lat}, 경도: ${lng}`)
 
-          // 위도와 경도를 setValue로 설정
           setValue("lat", lat)
           setValue("lng", lng)
         } else {

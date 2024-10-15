@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
-import { authOptions } from "@/pages/api/auth/[...nextauth]" // authOptions 경로를 확인하세요
+import { authOptions } from "@/pages/api/auth/[...nextauth]"
 import prisma from "@/db"
 
 // 사용자 역할 조회 API 핸들러
 export async function GET(req: Request) {
-  const session = await getServerSession(authOptions) // 세션 확인
+  const session = await getServerSession(authOptions)
 
   // 세션이 없으면 403 상태 반환
   if (!session) {

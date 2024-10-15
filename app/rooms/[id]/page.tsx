@@ -32,7 +32,7 @@ export default function RoomPage({ params }: ParamsProps) {
         }
 
         const roomData = await res.json()
-        console.log(roomData) // 데이터를 콘솔에 출력하여 확인
+        console.log(roomData) // 데이터를 콘솔에 출력해서 확인
         setData(roomData)
       } catch (e) {
         console.error(e)
@@ -87,8 +87,8 @@ export default function RoomPage({ params }: ParamsProps) {
           <CommentList
             isLoading={isLoadingComments}
             comments={comments}
-            roomId={parseInt(id)} // 숙소 ID를 전달
-            activityId={0} // 활동 ID가 없으므로 0 또는 undefined 전달
+            roomId={parseInt(id)}
+            activityId={0}
           />
         )}
       </div>

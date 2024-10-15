@@ -165,7 +165,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Error creating room:", error)
     return NextResponse.json(
-      { error: "An error occurred while creating the room." },
+      { error: "방 생성 중 문제가 발생했습니다." },
       { status: 500 },
     )
   }

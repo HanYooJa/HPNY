@@ -13,7 +13,6 @@ export default function ImageListModal({
   closeModal: () => void
   data: RoomType
 }) {
-  // 기본 이미지 설정
   const defaultImage = "/images/default-room.jpg"
 
   return (

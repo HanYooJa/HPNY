@@ -34,10 +34,9 @@ export default function Comment({
         comments={comments}
         isLoading={isLoading}
         roomId={room.id}
-        activityId={activityId} // activityId 추가
+        activityId={activityId}
       />
       <CommentForm room={room} activityId={activityId} refetch={refetch} />{" "}
-      {/* activityId 전달 */}
     </div>
   )
 }

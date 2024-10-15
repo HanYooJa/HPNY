@@ -1,8 +1,8 @@
 "use client"
 
-import { filterState } from "@/atom" // sortState import 제거
+import { filterState } from "@/atom"
 import { CATEGORY_DATA } from "@/constants"
-import { ACTIVITY_CATEGORY_DATA } from "@/constants" // 활동 카테고리 데이터 import
+import { ACTIVITY_CATEGORY_DATA } from "@/constants"
 import { useRecoilState } from "recoil"
 import { usePathname } from "next/navigation"
 
@@ -11,15 +11,13 @@ import { BiReset } from "react-icons/bi"
 
 export default function CategoryList() {
   const [filterValue, setFilterValue] = useRecoilState(filterState)
-  const pathname = usePathname() // 현재 경로 가져오기
+  const pathname = usePathname()
 
-  // 페이지에 따라 카테고리 데이터를 변경
   const isActivityPage = pathname === "/activities"
   const categoryData = isActivityPage ? ACTIVITY_CATEGORY_DATA : CATEGORY_DATA
 
   return (
     <>
-      {/* 카테고리 리스트 */}
       <div className="flex gap-6 fixed top-20 inset-x-0 mx-auto overflow-x-auto w-full px-6 sm:px-28 bg-white z-10 mb-6 justify-center whitespace-nowrap">
         <button
           className="flex-none justify-center gap-3 py-4 w-24 text-center"

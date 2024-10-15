@@ -39,7 +39,6 @@ export async function GET(
       return NextResponse.json({ message: "Room not found" }, { status: 404 })
     }
 
-    // 조회수 증가
     await db.room.update({
       where: { id: Number(roomId) },
       data: {

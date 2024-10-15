@@ -15,26 +15,26 @@ export async function GET() {
       select: {
         id: true,
         title: true,
-        images: true, // 이미지 배열 가져오기
+        images: true,
         bookings: {
           select: {
-            id: true, // 예약 정보만 선택
+            id: true,
           },
         },
       },
     })
 
-    // images 배열에서 첫 번째 이미지를 대표 이미지로 설정
+    // images 배열에서 첫 번째 이미지를 대표 이미지로
     const roomsWithImageUrl = rooms.map((room) => ({
       ...room,
-      imageUrl: room.images.length > 0 ? room.images[0] : "/default-image.jpg", // 첫 번째 이미지를 사용, 없으면 기본 이미지 사용
+      imageUrl: room.images.length > 0 ? room.images[0] : "/default-image.jpg",
     }))
 
     return NextResponse.json({
       data: roomsWithImageUrl,
     })
   } catch (error) {
-    console.error("Error fetching top booked rooms:", error) // 에러 콘솔 출력
+    console.error("Error fetching top booked rooms:", error)
     return NextResponse.json(
       { message: "Failed to fetch top booked rooms" },
       { status: 500 },

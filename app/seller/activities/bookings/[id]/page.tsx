@@ -1,4 +1,3 @@
-// app/seller/activities/bookings/[id]/page.tsx
 "use client"
 
 import { useEffect, useState } from "react"
@@ -31,7 +30,7 @@ export default function SellerActivityBookingDetailPage({
           `/api/seller/activities/bookings/${params.id}`,
           {
             headers: {
-              Authorization: `Bearer ${session.accessToken}`, // accessToken 포함
+              Authorization: `Bearer ${session.accessToken}`,
             },
           },
         )

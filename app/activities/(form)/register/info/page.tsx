@@ -36,8 +36,8 @@ export default function ActivityRegisterInfo() {
       address: activityForm?.address || "",
       images: activityForm?.images || [],
       category: activityForm?.category || "",
-      lat: lat, // 숫자로 변환된 값 설정
-      lng: lng, // 숫자로 변환된 값 설정
+      lat: lat,
+      lng: lng,
     })
     router.push("/activities/register/address")
   }
