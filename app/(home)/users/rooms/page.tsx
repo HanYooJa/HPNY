@@ -141,9 +141,6 @@ export default function UserRooms() {
               상세 보기
             </th>
             <th scope="col" className="py-3 px-6 min-w-[80px]">
-              수정
-            </th>
-            <th scope="col" className="py-3 px-6 min-w-[80px]">
               삭제
             </th>
           </tr>
@@ -171,14 +168,6 @@ export default function UserRooms() {
                       className="font-medium text-gray-600 hover:underline"
                     >
                       보기
-                    </Link>
-                  </td>
-                  <td className="px-6 py-4 min-w-[80px]">
-                    <Link
-                      href={`/rooms/edit/${room.id}`}
-                      className="font-medium text-gray-600 hover:underline"
-                    >
-                      수정
                     </Link>
                   </td>
                   <td className="px-6 py-4 min-w-[80px]">

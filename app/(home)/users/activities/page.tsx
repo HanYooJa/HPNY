@@ -26,13 +26,17 @@ export default function UserActivities() {
   }
 
   const fetchMyActivities = async ({ pageParam = 1 }) => {
-    const { data } = await axios("/api/activities?my=true&page=" + pageParam, {
-      params: {
-        limit: 12,
-        page: pageParam,
-        ...searchParams,
+    // 현재 사용자가 등록한 활동만 불러오기 위해 my=true 추가
+    const { data } = await axios.get(
+      "/api/activities?my=true&page=" + pageParam,
+      {
+        params: {
+          limit: 12,
+          page: pageParam,
+          ...searchParams,
+        },
       },
-    })
+    )
 
     return data
   }
@@ -46,7 +50,7 @@ export default function UserActivities() {
     fetchNextPage,
     refetch,
   } = useInfiniteQuery(
-    [`activities-user-${session?.user.id}`, searchParams],
+    [`activities-user-${session?.user?.id}`, searchParams],
     fetchMyActivities,
     {
       getNextPageParam: (lastPage) =>
@@ -141,9 +145,6 @@ export default function UserActivities() {
               상세 보기
             </th>
             <th scope="col" className="py-3 px-6 min-w-[80px]">
-              수정
-            </th>
-            <th scope="col" className="py-3 px-6 min-w-[80px]">
               삭제
             </th>
           </tr>
@@ -171,14 +172,6 @@ export default function UserActivities() {
                       className="font-medium text-gray-600 hover:underline"
                     >
                       보기
-                    </Link>
-                  </td>
-                  <td className="px-6 py-4 min-w-[80px]">
-                    <Link
-                      href={`/activities/edit/${activity.id}`}
-                      className="font-medium text-gray-600 hover:underline"
-                    >
-                      수정
                     </Link>
                   </td>
                   <td className="px-6 py-4 min-w-[80px]">

@@ -176,21 +176,6 @@ export default function ActivityRegisterImage() {
             ))}
         </div>
 
-        {/* 업로드된 이미지 미리보기 */}
-        <div className="mt-10 max-w-lg mx-auto flex flex-wrap gap-4">
-          {uploadedImages &&
-            uploadedImages.map((imageUrl, index) => (
-              <Image
-                key={index}
-                src={imageUrl} // 업로드된 이미지 URL 사용
-                alt="업로드된 이미지"
-                width={100}
-                height={100}
-                className="rounded-md"
-              />
-            ))}
-        </div>
-
         <NextButton
           type="submit"
           text="완료"

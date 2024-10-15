@@ -18,6 +18,7 @@ import Slider from "react-slick"
 import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
 
+// 상단 예약이 많은 활동을 불러오는 함수
 const fetchTopBookedActivities = async () => {
   const { data } = await axios.get("/api/activities/top-booked")
   return data
@@ -30,6 +31,7 @@ export default function ActivityPage() {
   const pageRef = useIntersectionObserver(ref, {})
   const isPageEnd = !!pageRef?.isIntersecting
 
+  // 필터링 값에 따라 요청에 필요한 파라미터 정의
   const filterParams = {
     location: filterValue.location,
     category: filterValue.category,
@@ -37,8 +39,9 @@ export default function ActivityPage() {
 
   const [sortBy, setSortBy] = useState("bookings")
 
+  // 활동 데이터를 불러오는 함수
   const fetchActivities = async ({ pageParam = 1 }) => {
-    const { data } = await axios("/api/activities?page=" + pageParam, {
+    const { data } = await axios.get("/api/activities", {
       params: {
         limit: 12,
         page: pageParam,
@@ -46,85 +49,49 @@ export default function ActivityPage() {
         ...filterParams,
       },
     })
-
     return data
   }
 
+  // useInfiniteQuery로 활동 데이터 무한 스크롤
   const {
     data: activities,
     isFetching,
-    fetchNextPage,
     isFetchingNextPage,
+    fetchNextPage,
     hasNextPage,
     isError,
     isLoading,
   } = useInfiniteQuery(["activities", filterParams, sortBy], fetchActivities, {
-    getNextPageParam: (lastPage, pages) =>
-      lastPage?.data?.length > 0 ? lastPage.page + 1 : undefined,
+    getNextPageParam: (lastPage) => {
+      const nextPage = lastPage.page + 1
+      return nextPage <= lastPage.totalPage ? nextPage : undefined
+    },
   })
 
+  // 상단에 보여줄 이달의 활동 데이터를 가져오는 useQuery
   const {
     data: topBookedActivities,
     isLoading: isTopLoading,
     isError: isTopError,
   } = useQuery("topBookedActivities", fetchTopBookedActivities)
 
+  // 슬라이더 설정
   const sliderSettings = {
     dots: true,
     infinite: true,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    autoplay: true, // 자동 슬라이드
-    autoplaySpeed: 5000, // 5초마다 다음 활동으로
+    autoplay: true,
+    autoplaySpeed: 5000,
   }
 
-  const [activeActivity, setActiveActivity] = useState<number | null>(null)
-  const [currentImageIndex, setCurrentImageIndex] = useState<{
-    [key: number]: number
-  }>({})
-
-  const handleMouseEnter = (activityId: number, activityImages: string[]) => {
-    if (activityImages.length > 1) {
-      setActiveActivity(activityId)
-      setCurrentImageIndex((prevState) => ({
-        ...prevState,
-        [activityId]: 0, // 처음엔 첫 번째 이미지
-      }))
-
-      const interval = setInterval(() => {
-        setCurrentImageIndex((prevState) => ({
-          ...prevState,
-          [activityId]:
-            prevState[activityId] !== undefined
-              ? (prevState[activityId] + 1) % activityImages.length
-              : 0,
-        }))
-      }, 2000)
-
-      intervalRef.current = interval
-    }
-  }
-
-  const handleMouseLeave = (activityId: number) => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current)
-    }
-    setCurrentImageIndex((prevState) => ({
-      ...prevState,
-      [activityId]: 0,
-    }))
-  }
-
-  const intervalRef = useRef<NodeJS.Timeout | null>(null)
-
+  // 스크롤 끝 감지 시 다음 페이지 로드
   useEffect(() => {
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-      }
+    if (isPageEnd && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage()
     }
-  }, [])
+  }, [isPageEnd, hasNextPage, isFetchingNextPage, fetchNextPage])
 
   return (
     <>
@@ -151,29 +118,20 @@ export default function ActivityPage() {
               <div
                 key={activity.id}
                 className="flex flex-col items-center justify-center p-4 bg-white shadow-lg rounded-lg"
-                onMouseEnter={() =>
-                  handleMouseEnter(activity.id, activity.images)
-                }
-                onMouseLeave={() => handleMouseLeave(activity.id)}
               >
                 <div className="h-[320px] md:h-[240px] overflow-hidden relative z-0">
                   <img
-                    src={
-                      activity.images[currentImageIndex[activity.id] || 0] ||
-                      "/default-image.jpg"
-                    }
+                    src={activity.images[0] || "/default-image.jpg"}
                     alt={activity.title}
                     className="w-64 h-48 object-cover mx-auto rounded-lg"
                   />
                 </div>
-
                 <h3 className="text-lg mt-2 font-semibold text-center">
                   {activity.title}
                 </h3>
                 <p className="text-gray-500 text-center mt-0.5">
                   예약 횟수: {activity.bookings?.length ?? 0}
                 </p>
-
                 <div className="flex justify-center w-full">
                   <button
                     onClick={() => router.push(`/activities/${activity.id}`)}
@@ -224,7 +182,7 @@ export default function ActivityPage() {
         )}
       </GridLayout>
 
-      {(isFetching || hasNextPage || isFetchingNextPage) && <Loader />}
+      {(isFetching || isFetchingNextPage) && <Loader />}
       <div className="w-full touch-none h-10 mb-10" ref={ref} />
     </>
   )
