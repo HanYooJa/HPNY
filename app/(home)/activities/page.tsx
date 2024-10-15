@@ -18,7 +18,7 @@ import Slider from "react-slick"
 import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
 
-// "이달의 활동" 데이터를 가져오는 함수
+// "이달의 활동" 데이터를 가져옴
 const fetchTopBookedActivities = async () => {
   const { data } = await axios.get("/api/activities/top-booked")
   return data
