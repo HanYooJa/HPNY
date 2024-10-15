@@ -1,8 +1,26 @@
+"use client"
+
 import { FaqType } from "@/interface"
 
-export default async function FaqPage() {
-  const data: FaqType[] = await getData()
+const faqData: FaqType[] = [
+  {
+    id: 1,
+    title: "로그인은 어떻게 하나요?",
+    desc: "Comma에서 로그인은 우측 상단에서 할 수 있습니다.",
+  },
+  {
+    id: 2,
+    title: "예약은 어떻게 하나요?",
+    desc: "원하는 숙소나 활동을 선택 후 예약 버튼을 눌러 예약을 진행할 수 있습니다.",
+  },
+  {
+    id: 3,
+    title: "판매자로 등록하려면 어떻게 해야 하나요?",
+    desc: "마이페이지에서 판매자 등록을 신청할 수 있습니다.",
+  },
+]
 
+export default function FaqPage() {
   return (
     <div className="max-w-5xl mx-auto">
       <h1 className="text-lg md:text-3xl font-semibold">
@@ -34,8 +52,9 @@ export default async function FaqPage() {
         있습니다.
       </p>
       <p>- 마이페이지에서 다양한 기능을 사용하실 수 있습니다.</p>
+
       <div className="mt-8 flex flex-col mb-10">
-        {data?.map((faq) => (
+        {faqData.map((faq) => (
           <div
             key={faq.id}
             className="py-5 border-b border-b-gray-200 text-black items-center font-semibold"
@@ -47,20 +66,4 @@ export default async function FaqPage() {
       </div>
     </div>
   )
-}
-
-async function getData() {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/faqs`, {
-      cache: "force-cache",
-    })
-
-    if (!res.ok) {
-      throw new Error("failed to fetch")
-    }
-
-    return res.json()
-  } catch (e) {
-    console.error(e)
-  }
 }

@@ -17,6 +17,9 @@ const nextConfig = {
         hostname: "img1.kakaocdn.net",
       },
       {
+        hostname: "k.kakaocdn.net",
+      },
+      {
         hostname: "lh3.googleusercontent.com",
       },
       {
@@ -24,7 +27,7 @@ const nextConfig = {
       },
     ],
 
-    domains: ["localhost"],
+    domains: ["localhost", "k.kakaocdn.net"],
   },
 }
 
