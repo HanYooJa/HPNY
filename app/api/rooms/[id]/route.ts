@@ -21,6 +21,14 @@ export async function GET(
         lng: true,
         freeCancel: true,
         selfCheckIn: true,
+        officeSpace: true, // 추가
+        hasMountainView: true, // 추가
+        hasShampoo: true, // 추가
+        hasFreeLaundry: true, // 추가
+        hasAirConditioner: true, // 추가
+        hasWifi: true, // 추가
+        hasBarbeque: true, // 추가
+        hasFreeParking: true, // 추가
         desc: true,
         bedroomDesc: true,
         user: {
@@ -39,6 +47,7 @@ export async function GET(
       return NextResponse.json({ message: "Room not found" }, { status: 404 })
     }
 
+    // 조회수 증가
     await db.room.update({
       where: { id: Number(roomId) },
       data: {
