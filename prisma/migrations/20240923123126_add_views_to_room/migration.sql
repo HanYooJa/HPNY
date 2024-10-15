@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Activity" ADD COLUMN     "views" INTEGER NOT NULL DEFAULT 0;
+
+-- AlterTable
+ALTER TABLE "Room" ADD COLUMN     "views" INTEGER NOT NULL DEFAULT 0;

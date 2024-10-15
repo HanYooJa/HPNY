@@ -1,0 +1,190 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String  @map("user_id")
+  type               String
+  provider           String
+  providerAccountId  String  @map("provider_account_id")
+  refresh_token      String? @db.Text
+  refresh_token_expires_in    Int?
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
+}
+
+model User {
+  id            String      @id @default(uuid())
+  email         String?     @unique
+  name          String?
+  image         String?
+  desc          String?
+  emailVerified Boolean?
+  phone         String?
+  address       String?
+  role          UserRole    @default(USER) // 역할 필드 추가
+  rooms         Room[]
+  activities    Activity[]
+  accounts      Account[]
+  sessions      Session[]
+  likes         Like[]
+  comments      Comment[]
+  bookings      Booking[]
+}
+
+model Comment {
+  id            Int         @id @default(autoincrement())
+  createdAt     DateTime    @default(now())
+  body          String
+  roomId        Int?
+  activityId    Int?
+  userId        String
+  room          Room?       @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  activity      Activity?   @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, roomId])
+  @@index([userId, activityId])
+}
+
+model Like {
+  id              Int        @id @default(autoincrement())
+  createdAt       DateTime   @default(now())
+  userId          String
+  roomId          Int?
+  activityId      Int?
+  room            Room?      @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  activity        Activity?  @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, roomId])
+  @@index([userId, activityId])
+}
+
+model Room {
+  id                  Int         @id @default(autoincrement())
+  title               String
+  images              String[]
+  imageKeys           String[]
+  address             String
+  lat                 Float       // Changed to Float
+  lng                 Float       // Changed to Float
+  category            String
+  desc                String
+  price               Int
+  bedroomDesc         String?
+  freeCancel          Boolean     @default(false)
+  selfCheckIn         Boolean     @default(false)
+  officeSpace         Boolean     @default(false)
+  hasMountainView     Boolean     @default(false)
+  hasShampoo          Boolean     @default(false)
+  hasFreeLaundry      Boolean     @default(false)
+  hasAirConditioner   Boolean     @default(false)
+  hasWifi             Boolean     @default(false)
+  hasBarbeque         Boolean     @default(false)
+  hasFreeParking      Boolean     @default(false)
+  views               Int         @default(0) // 조회수 필드 추가
+  userId              String?
+  createdAt           DateTime    @default(now())
+  likes               Like[]
+  comments            Comment[]
+  bookings            Booking[]
+  user                User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Faq {
+  id                  Int        @id @default(autoincrement())
+  title               String
+  desc                String
+}
+
+model Booking {
+  id                    Int        @id @default(autoincrement())
+  checkIn               DateTime
+  checkOut              DateTime
+  guestCount            Int
+  totalDays             Int
+  totalAmount           Int
+  roomId                Int?       // roomId is nullable
+  activityId            Int?       // activityId is nullable
+  room                  Room?      @relation(fields: [roomId], references: [id], onDelete: Cascade) // onDelete: Cascade 추가
+  activity              Activity?  @relation(fields: [activityId], references: [id], onDelete: Cascade) // onDelete: Cascade 추가
+  userId                String
+  user                  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @default(now())
+  status                BookingStatus
+
+  @@index([roomId])
+  @@index([activityId])
+}
+
+model Activity {
+  id         Int      @id @default(autoincrement())
+  title      String
+  images     String[]
+  imageKeys  String[]
+  address    String
+  lat        Float    // Changed to Float
+  lng        Float    // Changed to Float
+  category   String
+  desc       String
+  price      Int
+  views      Int      @default(0) // 조회수 필드 추가
+  userId     String?
+  createdAt  DateTime @default(now())
+  likes      Like[]
+  comments   Comment[]
+  bookings   Booking[]
+  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+enum BookingStatus {
+  SUCCESS
+  CANCEL
+  PENDING
+}
+
+// 사용자 역할을 위한 Enum 정의
+enum UserRole {
+  USER
+  SELLER
+}
