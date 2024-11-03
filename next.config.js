@@ -26,8 +26,6 @@ const nextConfig = {
         hostname: "phinf.pstatic.net",
       },
     ],
-
-    domains: ["localhost", "k.kakaocdn.net"],
   },
 }
 

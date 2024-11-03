@@ -27,7 +27,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   pages: {
-    signIn: "/users/signin", // 로그인 페이지 설정
+    signIn: "/users/signin",
   },
   callbacks: {
     async session({ session, token }) {
